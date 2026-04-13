@@ -8,6 +8,7 @@
   <meta name="apple-mobile-web-app-title" content="WCSC Devices">
   <title>WCSC Chromebook Manager</title>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/zxing-js/0.19.1/umd/index.min.js"></script>
   <style>
     :root {
       --navy: #1a3a5c;
@@ -487,11 +488,8 @@
 
   window.onload = function() {
     // Init BarcodeDetector
-    if ('BarcodeDetector' in window) {
-      BarcodeDetector.getSupportedFormats().then(function(formats) {
-        barcodeDetector = new BarcodeDetector({ formats: formats });
-      });
-    }
+    // ZXing works on all iOS versions including betas
+    barcodeDetector = true; // flag that scanner is available
 
     var stored = localStorage.getItem('wcsc_token');
     var storedUser = localStorage.getItem('wcsc_user');
@@ -522,67 +520,65 @@
 
   // ── Camera ───────────────────────────────────────────────
   function openCamera(targetInputId) {
-    if (!barcodeDetector) {
-      showToast('Barcode scanning not available — update iOS to 17+', 'error');
-      return;
-    }
     cameraTargetInput = targetInputId;
-    document.getElementById('camera-overlay').classList.add('active');
+    cameraActive = true;
     document.getElementById('camera-status').textContent = 'Starting camera...';
+    document.getElementById('camera-overlay').classList.add('active');
 
     navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
     })
     .then(function(stream) {
       cameraStream = stream;
       var video = document.getElementById('camera-video');
       video.srcObject = stream;
-      cameraActive = true;
       video.onloadedmetadata = function() {
         video.play();
-        document.getElementById('camera-status').textContent = 'Align barcode within the frame';
-        scanLoop();
+        document.getElementById('camera-status').textContent = 'Scanning...';
+        startZXing(video);
       };
     })
     .catch(function(err) {
       closeCamera();
       if (err.name === 'NotAllowedError') {
-        showToast('Camera denied — enable in Settings > Safari > Camera', 'error');
+        showToast('Camera permission denied. Go to Settings → Safari → Camera.', 'error');
       } else {
         showToast('Camera error: ' + err.message, 'error');
       }
     });
   }
 
-  function scanLoop() {
-    if (!cameraActive || !barcodeDetector) return;
-    var video = document.getElementById('camera-video');
-    if (video.readyState !== video.HAVE_ENOUGH_DATA) {
-      scanAnimFrame = requestAnimationFrame(scanLoop);
-      return;
+  function startZXing(video) {
+    if (!cameraActive) return;
+    try {
+      var codeReader = new ZXing.BrowserMultiFormatReader();
+      codeReader.decodeFromVideoElement(video)
+        .then(function(result) {
+          if (result && cameraActive) {
+            var value = result.getText();
+            document.getElementById('camera-status').textContent = '✅ Got it: ' + value;
+            navigator.vibrate && navigator.vibrate(50);
+            setTimeout(function() {
+              var input = document.getElementById(cameraTargetInput);
+              input.value = value.toUpperCase();
+              closeCamera();
+              if (cameraTargetInput === 'assign-serial') lookupAssignDevice();
+              else if (cameraTargetInput === 'return-serial') lookupReturnDevice();
+              else if (cameraTargetInput === 'damage-serial') lookupDamageDevice();
+              else if (cameraTargetInput === 'lookup-serial') lookupDeviceHistory();
+            }, 300);
+          }
+        })
+        .catch(function(err) {
+          if (cameraActive) showToast('Could not read barcode — try again', 'error');
+        });
+    } catch(e) {
+      showToast('Scanner error: ' + e.message, 'error');
+      closeCamera();
     }
-    barcodeDetector.detect(video)
-      .then(function(barcodes) {
-        if (!cameraActive) return;
-        if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
-          var value = barcodes[0].rawValue;
-          document.getElementById('camera-status').textContent = '✅ Scanned: ' + value;
-          setTimeout(function() {
-            document.getElementById(cameraTargetInput).value = value.toUpperCase();
-            closeCamera();
-            if (cameraTargetInput === 'assign-serial') lookupAssignDevice();
-            else if (cameraTargetInput === 'return-serial') lookupReturnDevice();
-            else if (cameraTargetInput === 'damage-serial') lookupDamageDevice();
-            else if (cameraTargetInput === 'lookup-serial') lookupDeviceHistory();
-          }, 400);
-          return;
-        }
-        scanAnimFrame = requestAnimationFrame(scanLoop);
-      })
-      .catch(function() {
-        if (cameraActive) scanAnimFrame = requestAnimationFrame(scanLoop);
-      });
   }
+
+  function scanLoop() {} // no longer used, kept to avoid reference errors
 
   function closeCamera() {
     cameraActive = false;
