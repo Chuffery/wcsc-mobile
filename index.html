@@ -517,75 +517,86 @@
   function processBarcodImage(file) {
     document.getElementById('decode-overlay').classList.add('active');
 
-    var img = new Image();
-    var url = URL.createObjectURL(file);
-    img.onload = function() {
-      URL.revokeObjectURL(url);
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      // Strip the data:image/jpeg;base64, prefix
+      var base64 = e.target.result.split(',')[1];
 
-      // Scale image down to max 1200px wide for faster processing
-      var maxW = 1200;
-      var scale = img.width > maxW ? maxW / img.width : 1;
-      var w = Math.round(img.width * scale);
-      var h = Math.round(img.height * scale);
-
-      var canvas = document.getElementById('decode-canvas');
-      canvas.width = w;
-      canvas.height = h;
-      var ctx = canvas.getContext('2d');
-
-      // Draw scaled image
-      ctx.drawImage(img, 0, 0, w, h);
-
-      // Boost contrast to help barcode detection
-      var imageData = ctx.getImageData(0, 0, w, h);
-      var data = imageData.data;
-      for (var i = 0; i < data.length; i += 4) {
-        // Convert to greyscale
-        var grey = 0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2];
-        // Apply threshold to make it high contrast black/white
-        var val = grey > 128 ? 255 : 0;
-        data[i] = val; data[i+1] = val; data[i+2] = val;
-      }
-      ctx.putImageData(imageData, 0, 0);
-
-      if ('BarcodeDetector' in window) {
-        var detector = new BarcodeDetector({ formats: ['code_128', 'code_39', 'qr_code', 'ean_13', 'ean_8', 'upc_a', 'upc_e', 'pdf417', 'aztec', 'data_matrix'] });
-        detector.detect(canvas)
-          .then(function(barcodes) {
-            document.getElementById('decode-overlay').classList.remove('active');
-            if (barcodes && barcodes.length > 0) {
-              handleBarcodeResult(barcodes[0].rawValue);
-            } else {
-              // Try once more on original image without threshold
-              ctx.drawImage(img, 0, 0, w, h);
-              detector.detect(canvas)
-                .then(function(barcodes2) {
-                  if (barcodes2 && barcodes2.length > 0) {
-                    handleBarcodeResult(barcodes2[0].rawValue);
-                  } else {
-                    promptManualEntry();
-                  }
-                })
-                .catch(function() { promptManualEntry(); });
-            }
-          })
-          .catch(function(err) {
-            document.getElementById('decode-overlay').classList.remove('active');
-            promptManualEntry();
-          });
-      } else {
+      fetch('https://vision.googleapis.com/v1/images:annotate', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + accessToken,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          requests: [{
+            image: { content: base64 },
+            features: [
+              { type: 'TEXT_DETECTION', maxResults: 10 },
+              { type: 'BARCODE_DETECTION', maxResults: 5 }
+            ]
+          }]
+        })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
         document.getElementById('decode-overlay').classList.remove('active');
+
+        var response = data.responses && data.responses[0];
+        if (!response) { promptManualEntry(); return; }
+
+        // Try barcode detection first
+        if (response.barcodeAnnotations && response.barcodeAnnotations.length > 0) {
+          handleBarcodeResult(response.barcodeAnnotations[0].rawValue);
+          return;
+        }
+
+        // Fall back to OCR text — find the serial number pattern
+        if (response.textAnnotations && response.textAnnotations.length > 0) {
+          var fullText = response.textAnnotations[0].description || '';
+          // Look for serial number pattern — alphanumeric 6-12 chars on its own line
+          var lines = fullText.split('\n').map(function(l) { return l.trim(); });
+          var serial = null;
+
+          // First pass — look for a line that matches serial pattern (letters+numbers, 6-12 chars)
+          for (var i = 0; i < lines.length; i++) {
+            var line = lines[i].toUpperCase().replace(/\s/g, '');
+            if (/^[A-Z0-9]{6,12}$/.test(line) && !/^(WARRICK|COUNTY|SCHOOL|CORP|FOUND|PLEASE|RETURN|ANY)/.test(line)) {
+              serial = line;
+              break;
+            }
+          }
+
+          if (serial) {
+            handleBarcodeResult(serial);
+          } else {
+            // Show full OCR text so tech can confirm
+            var clean = fullText.replace(/\n/g, ' ').trim();
+            var manual = prompt('OCR found: "' + clean + '"\n\nEnter or confirm the serial number:');
+            if (manual && manual.trim()) handleBarcodeResult(manual.trim().toUpperCase());
+          }
+          return;
+        }
+
         promptManualEntry();
-      }
+      })
+      .catch(function(err) {
+        document.getElementById('decode-overlay').classList.remove('active');
+        showToast('Vision API error: ' + err.message, 'error');
+        promptManualEntry();
+      });
     };
-    img.onerror = function() {
-      URL.revokeObjectURL(url);
+    reader.onerror = function() {
       document.getElementById('decode-overlay').classList.remove('active');
-      showToast('Could not load image', 'error');
+      showToast('Could not read image file', 'error');
     };
-    img.src = url;
+    reader.readAsDataURL(file);
   }
 
+  function promptManualEntry() {
+    var manual = prompt('Could not read barcode automatically.\nEnter serial number manually:');
+    if (manual && manual.trim()) handleBarcodeResult(manual.trim().toUpperCase());
+  }
   function promptManualEntry() {
     var manual = prompt('Could not read barcode automatically.\nEnter serial number manually:');
     if (manual && manual.trim()) {
