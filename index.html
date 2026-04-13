@@ -8,6 +8,7 @@
   <meta name="apple-mobile-web-app-title" content="WCSC Devices">
   <title>WCSC Chromebook Manager</title>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <style>
     :root {
       --navy: #1a3a5c;
@@ -64,11 +65,9 @@
     /* ── Header ── */
     .header {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      height: var(--header-height);
-      background: var(--navy);
+      height: var(--header-height); background: var(--navy);
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 16px;
-      padding-top: env(safe-area-inset-top);
+      padding: 0 16px; padding-top: env(safe-area-inset-top);
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
     .header-title { font-size: 16px; font-weight: 700; color: var(--gold-light); }
@@ -113,22 +112,17 @@
     .form-group { margin-bottom: 14px; }
     .form-group label { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
     .form-group input, .form-group textarea {
-      width: 100%; padding: 13px 14px;
-      border: 1.5px solid var(--border); border-radius: 10px;
-      font-size: 16px; color: var(--text); background: white;
-      -webkit-appearance: none; appearance: none;
+      width: 100%; padding: 13px 14px; border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: 16px; color: var(--text); background: white; -webkit-appearance: none; appearance: none;
     }
     .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--navy); }
     .form-group textarea { resize: none; min-height: 80px; font-family: inherit; }
-    .mono { font-family: 'SF Mono', Monaco, monospace !important; letter-spacing: 1px; }
 
     /* ── Serial Input Row ── */
     .serial-row { display: flex; gap: 10px; align-items: stretch; margin-bottom: 14px; }
     .serial-row input {
-      flex: 1; padding: 13px 14px;
-      border: 1.5px solid var(--border); border-radius: 10px;
-      font-size: 16px; color: var(--text); background: white;
-      -webkit-appearance: none; appearance: none;
+      flex: 1; padding: 13px 14px; border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: 16px; color: var(--text); background: white; -webkit-appearance: none; appearance: none;
       font-family: 'SF Mono', Monaco, monospace; letter-spacing: 1px;
     }
     .serial-row input:focus { outline: none; border-color: var(--navy); }
@@ -140,20 +134,21 @@
     }
     .scan-btn:active { background: var(--navy-light); }
 
-    /* Hidden camera input */
+    /* Hidden inputs */
     #camera-input { display: none; }
+    #decode-canvas { display: none; }
 
-    /* ── Decoding overlay ── */
+    /* ── Decode Overlay ── */
     #decode-overlay {
       display: none; position: fixed; inset: 0;
-      background: rgba(26,58,92,0.92); z-index: 9998;
+      background: rgba(26,58,92,0.95); z-index: 9998;
       flex-direction: column; align-items: center; justify-content: center;
-      color: white; gap: 16px;
+      color: white; gap: 16px; padding: 40px;
     }
     #decode-overlay.active { display: flex; }
     .decode-spinner { width: 48px; height: 48px; border: 4px solid rgba(255,255,255,0.2); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
-    .decode-text { font-size: 16px; font-weight: 600; }
-    .decode-sub { font-size: 13px; opacity: 0.7; }
+    .decode-text { font-size: 17px; font-weight: 700; text-align: center; }
+    .decode-progress { font-size: 13px; opacity: 0.7; text-align: center; min-height: 20px; }
 
     /* ── Buttons ── */
     .btn {
@@ -185,8 +180,7 @@
     .student-result-btn {
       display: block; width: 100%; text-align: left; padding: 14px 16px;
       background: white; border: 1.5px solid var(--border); border-radius: 10px;
-      margin-bottom: 8px; cursor: pointer; color: var(--text);
-      -webkit-appearance: none;
+      margin-bottom: 8px; cursor: pointer; color: var(--text); -webkit-appearance: none;
     }
     .student-result-btn:active { background: #eaf1fb; border-color: var(--navy); }
     .student-result-name { font-weight: 700; display: block; font-size: 15px; }
@@ -196,15 +190,13 @@
     .damage-check-item {
       display: flex; align-items: center; gap: 14px;
       padding: 14px 16px; background: white;
-      border: 1.5px solid var(--border); border-radius: 10px; margin-bottom: 8px;
-      cursor: pointer;
+      border: 1.5px solid var(--border); border-radius: 10px; margin-bottom: 8px; cursor: pointer;
     }
     .damage-check-item.checked { border-color: var(--navy); background: #eaf1fb; }
     .damage-check-item:active { opacity: 0.8; }
     .damage-check-box {
       width: 26px; height: 26px; border: 2px solid var(--border); border-radius: 6px;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-      font-size: 15px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 15px;
     }
     .damage-check-item.checked .damage-check-box { background: var(--navy); border-color: var(--navy); color: white; }
     .damage-check-info { flex: 1; }
@@ -215,13 +207,12 @@
     /* ── Total Bar ── */
     .total-bar {
       background: var(--navy); color: white; border-radius: 10px;
-      padding: 16px; display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 16px;
+      padding: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
     }
     .total-bar-label { font-size: 14px; opacity: 0.8; }
     .total-bar-amount { font-size: 26px; font-weight: 800; }
 
-    /* ── History Items ── */
+    /* ── History ── */
     .history-item { padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
     .history-item:last-child { border-bottom: none; }
     .history-item-title { font-weight: 600; margin-bottom: 3px; }
@@ -267,25 +258,23 @@
 </head>
 <body>
 
-<!-- Hidden camera file input — triggers native iOS camera -->
 <input type="file" id="camera-input" accept="image/*" capture="environment">
-<!-- Hidden canvas for barcode decoding -->
-<canvas id="decode-canvas" style="display:none;"></canvas>
+<canvas id="decode-canvas"></canvas>
 
-<!-- Loading Overlay -->
+<!-- Loading -->
 <div id="loading-overlay">
   <div class="loading-spinner"></div>
   <div style="font-size:14px;opacity:0.7;">Loading...</div>
 </div>
 
-<!-- Decoding Overlay -->
+<!-- Decode overlay -->
 <div id="decode-overlay">
   <div class="decode-spinner"></div>
   <div class="decode-text">Reading barcode...</div>
-  <div class="decode-sub">Please wait</div>
+  <div class="decode-progress" id="decode-progress">Initializing...</div>
 </div>
 
-<!-- Login Screen -->
+<!-- Login -->
 <div id="login-screen" class="hidden">
   <div class="login-logo">📱</div>
   <div class="login-district">Warrick County School Corporation</div>
@@ -315,7 +304,7 @@
 
   <div class="content">
 
-    <!-- ASSIGN PAGE -->
+    <!-- ASSIGN -->
     <div class="page active" id="page-assign">
       <div class="page-title">Assign Device</div>
       <div class="page-sub">Scan or enter a serial number</div>
@@ -324,8 +313,8 @@
         <div class="form-group">
           <label>Serial Number</label>
           <div class="serial-row">
-            <input type="text" id="assign-serial" class="mono" placeholder="Scan or type SN..." autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
-            <button class="scan-btn" onclick="triggerCamera('assign-serial')" title="Scan barcode">📷</button>
+            <input type="text" id="assign-serial" placeholder="Scan or type SN..." autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
+            <button class="scan-btn" onclick="triggerCamera('assign-serial')">📷</button>
           </div>
         </div>
         <button class="btn btn-primary" id="assign-lookup-btn" onclick="lookupAssignDevice()">🔍 Look Up Device</button>
@@ -353,7 +342,7 @@
       </div>
     </div>
 
-    <!-- RETURN PAGE -->
+    <!-- RETURN -->
     <div class="page" id="page-return">
       <div class="page-title">Return Device</div>
       <div class="page-sub">Check a device back in</div>
@@ -361,8 +350,8 @@
         <div class="form-group">
           <label>Serial Number</label>
           <div class="serial-row">
-            <input type="text" id="return-serial" class="mono" placeholder="Scan or type SN..." autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
-            <button class="scan-btn" onclick="triggerCamera('return-serial')" title="Scan barcode">📷</button>
+            <input type="text" id="return-serial" placeholder="Scan or type SN..." autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
+            <button class="scan-btn" onclick="triggerCamera('return-serial')">📷</button>
           </div>
         </div>
         <button class="btn btn-primary" id="return-lookup-btn" onclick="lookupReturnDevice()">🔍 Look Up Device</button>
@@ -380,7 +369,7 @@
       </div>
     </div>
 
-    <!-- DAMAGE PAGE -->
+    <!-- DAMAGE -->
     <div class="page" id="page-damage">
       <div class="page-title">Log Damage</div>
       <div class="page-sub">Select all damage types that apply</div>
@@ -389,8 +378,8 @@
         <div class="form-group">
           <label>Serial Number</label>
           <div class="serial-row">
-            <input type="text" id="damage-serial" class="mono" placeholder="Scan or type SN..." autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
-            <button class="scan-btn" onclick="triggerCamera('damage-serial')" title="Scan barcode">📷</button>
+            <input type="text" id="damage-serial" placeholder="Scan or type SN..." autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
+            <button class="scan-btn" onclick="triggerCamera('damage-serial')">📷</button>
           </div>
         </div>
         <button class="btn btn-primary" id="damage-lookup-btn" onclick="lookupDamageDevice()">🔍 Look Up Device</button>
@@ -413,7 +402,7 @@
       </div>
     </div>
 
-    <!-- LOOKUP PAGE -->
+    <!-- LOOKUP -->
     <div class="page" id="page-lookup">
       <div class="page-title">Device Lookup</div>
       <div class="page-sub">Full history for any device</div>
@@ -421,8 +410,8 @@
         <div class="form-group">
           <label>Serial Number</label>
           <div class="serial-row">
-            <input type="text" id="lookup-serial" class="mono" placeholder="Scan or type SN..." autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
-            <button class="scan-btn" onclick="triggerCamera('lookup-serial')" title="Scan barcode">📷</button>
+            <input type="text" id="lookup-serial" placeholder="Scan or type SN..." autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
+            <button class="scan-btn" onclick="triggerCamera('lookup-serial')">📷</button>
           </div>
         </div>
         <button class="btn btn-primary" id="lookup-btn" onclick="lookupDeviceHistory()">🔎 Look Up</button>
@@ -448,7 +437,7 @@
       </div>
     </div>
 
-  </div><!-- /content -->
+  </div>
 
   <div class="bottom-nav">
     <div class="nav-item active" onclick="showPage('assign')" id="bnav-assign"><span class="nav-icon">🔗</span>Assign</div>
@@ -465,6 +454,11 @@
   var GOOGLE_CLIENT_ID = '459632940971-tqevq3kpec9lu12afsfiochd2k3hqjn9.apps.googleusercontent.com';
   var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRlhViqGwTs-rwB1_JcEsI8twL8Rd2djf_bkc5iH_vHLAp5ui9xMjBkXzAeuaPhL3K/exec'; // ← PASTE YOUR APPS SCRIPT WEB APP URL HERE
 
+  // Serial number pattern for WCSC Chromebooks
+  // Matches 6-12 alphanumeric chars — adjust if your serials have a different format
+  var SERIAL_PATTERN = /^[A-Z0-9]{6,12}$/;
+  var SKIP_WORDS = ['WARRICK','COUNTY','SCHOOL','CORP','FOUND','PLEASE','RETURN','ANY','IF','OR','TO','CALL','AND'];
+
   // ── State ────────────────────────────────────────────────
   var accessToken = null;
   var currentUser = null;
@@ -475,32 +469,37 @@
   var studentCache = [];
   var checkedDamages = {};
   var cameraTargetInput = null;
+  var tesseractWorker = null;
 
   // ── Init ─────────────────────────────────────────────────
   window.onload = function() {
-    // Set up camera input handler
-    var camInput = document.getElementById('camera-input');
-    camInput.addEventListener('change', function(e) {
+    document.getElementById('camera-input').addEventListener('change', function(e) {
       if (e.target.files && e.target.files[0]) {
-        processBarcodImage(e.target.files[0]);
+        processImage(e.target.files[0]);
       }
-      // Reset input so same file can be selected again
       e.target.value = '';
     });
 
-    // Enter key handlers for serial fields
-    document.getElementById('assign-serial').addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); lookupAssignDevice(); } });
-    document.getElementById('return-serial').addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); lookupReturnDevice(); } });
-    document.getElementById('damage-serial').addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); lookupDamageDevice(); } });
-    document.getElementById('lookup-serial').addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); lookupDeviceHistory(); } });
-    document.getElementById('assign-student-search').addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); searchStudents(); } });
+    ['assign-serial','return-serial','damage-serial','lookup-serial'].forEach(function(id) {
+      document.getElementById(id).addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          if (id === 'assign-serial') lookupAssignDevice();
+          else if (id === 'return-serial') lookupReturnDevice();
+          else if (id === 'damage-serial') lookupDamageDevice();
+          else if (id === 'lookup-serial') lookupDeviceHistory();
+        }
+      });
+    });
 
-    // Check stored session
+    document.getElementById('assign-student-search').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); searchStudents(); }
+    });
+
     var stored = localStorage.getItem('wcsc_token');
     var storedUser = localStorage.getItem('wcsc_user');
     if (stored && storedUser) {
-      accessToken = stored;
-      currentUser = storedUser;
+      accessToken = stored; currentUser = storedUser;
       initApp();
     } else {
       document.getElementById('loading-overlay').classList.add('hidden');
@@ -508,72 +507,144 @@
     }
   };
 
-  // ── Camera / Barcode ─────────────────────────────────────
+  // ── Camera / OCR ─────────────────────────────────────────
   function triggerCamera(targetInputId) {
     cameraTargetInput = targetInputId;
     document.getElementById('camera-input').click();
   }
 
-  function processBarcodImage(file) {
+  function processImage(file) {
     document.getElementById('decode-overlay').classList.add('active');
+    document.getElementById('decode-progress').textContent = 'Preparing image...';
 
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var base64 = e.target.result.split(',')[1];
-      api('decodeBarcode', { base64: base64 })
-        .then(function(res) {
-          document.getElementById('decode-overlay').classList.remove('active');
-          if (res.success) {
-            showToast('Read via ' + res.method + ': ' + res.value, 'success');
-            handleBarcodeResult(res.value);
-          } else {
-            showToast(res.error || 'Could not read barcode', 'error');
-            promptManualEntry();
-          }
-        })
-        .catch(function(err) {
-          document.getElementById('decode-overlay').classList.remove('active');
-          showToast('Error: ' + err.message, 'error');
-          promptManualEntry();
-        });
+    var img = new Image();
+    var url = URL.createObjectURL(file);
+
+    img.onload = function() {
+      URL.revokeObjectURL(url);
+
+      // Scale to max 1600px wide — good balance of accuracy vs speed
+      var maxW = 1600;
+      var scale = img.width > maxW ? maxW / img.width : 1;
+      var w = Math.round(img.width * scale);
+      var h = Math.round(img.height * scale);
+
+      var canvas = document.getElementById('decode-canvas');
+      canvas.width = w;
+      canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+
+      // Enhance contrast for better OCR
+      var imageData = ctx.getImageData(0, 0, w, h);
+      var d = imageData.data;
+      for (var i = 0; i < d.length; i += 4) {
+        var grey = 0.299 * d[i] + 0.587 * d[i+1] + 0.114 * d[i+2];
+        // Sharpen contrast
+        var val = grey < 100 ? 0 : grey > 180 ? 255 : grey;
+        d[i] = val; d[i+1] = val; d[i+2] = val;
+      }
+      ctx.putImageData(imageData, 0, 0);
+
+      document.getElementById('decode-progress').textContent = 'Running OCR...';
+      runTesseract(canvas);
     };
-    reader.onerror = function() {
+
+    img.onerror = function() {
+      URL.revokeObjectURL(url);
       document.getElementById('decode-overlay').classList.remove('active');
-      showToast('Could not read image file', 'error');
+      showToast('Could not load image', 'error');
     };
-    reader.readAsDataURL(file);
+
+    img.src = url;
   }
 
-  function promptManualEntry() {
-    var manual = prompt('Could not read barcode automatically.\nEnter serial number manually:');
-    if (manual && manual.trim()) handleBarcodeResult(manual.trim().toUpperCase());
+  function runTesseract(canvas) {
+    // Tesseract v5 API
+    Tesseract.recognize(canvas, 'eng', {
+      logger: function(m) {
+        if (m.status === 'recognizing text') {
+          var pct = Math.round((m.progress || 0) * 100);
+          document.getElementById('decode-progress').textContent = 'Reading text... ' + pct + '%';
+        }
+      }
+    })
+    .then(function(result) {
+      document.getElementById('decode-overlay').classList.remove('active');
+      var text = result.data && result.data.text ? result.data.text : '';
+      parseSerialFromText(text);
+    })
+    .catch(function(err) {
+      document.getElementById('decode-overlay').classList.remove('active');
+      showToast('OCR error: ' + err.message, 'error');
+      promptManualEntry();
+    });
   }
-  function promptManualEntry() {
-    var manual = prompt('Could not read barcode automatically.\nEnter serial number manually:');
-    if (manual && manual.trim()) {
-      handleBarcodeResult(manual.trim().toUpperCase());
+
+  function parseSerialFromText(text) {
+    if (!text || text.trim().length === 0) {
+      promptManualEntry();
+      return;
+    }
+
+    // Split into tokens and lines
+    var lines = text.split('\n').map(function(l) { return l.trim(); });
+    var serial = null;
+
+    // Pass 1 — look for a line that is exactly a serial number pattern
+    for (var i = 0; i < lines.length; i++) {
+      var clean = lines[i].toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (SERIAL_PATTERN.test(clean) && !SKIP_WORDS.some(function(w) { return clean === w || clean.startsWith(w); })) {
+        serial = clean;
+        break;
+      }
+    }
+
+    // Pass 2 — scan individual words if no line match
+    if (!serial) {
+      var words = text.toUpperCase().replace(/[^A-Z0-9\n ]/g, ' ').split(/[\s\n]+/);
+      for (var j = 0; j < words.length; j++) {
+        var word = words[j].trim();
+        if (SERIAL_PATTERN.test(word) && !SKIP_WORDS.some(function(w) { return word === w || word.startsWith(w); })) {
+          serial = word;
+          break;
+        }
+      }
+    }
+
+    if (serial) {
+      showToast('Serial found: ' + serial, 'success');
+      handleBarcodeResult(serial);
+    } else {
+      // Show what OCR found and let tech confirm
+      var cleanText = text.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 100);
+      var manual = prompt('OCR read: "' + cleanText + '"\n\nEnter or correct the serial number:');
+      if (manual && manual.trim()) handleBarcodeResult(manual.trim().toUpperCase());
     }
   }
+
   function handleBarcodeResult(value) {
     if (!value || !cameraTargetInput) return;
-    var input = document.getElementById(cameraTargetInput);
-    input.value = value.toUpperCase();
-    showToast('Barcode read: ' + value, 'success');
-    // Auto-trigger lookup
+    document.getElementById(cameraTargetInput).value = value.toUpperCase();
     setTimeout(function() {
       if (cameraTargetInput === 'assign-serial') lookupAssignDevice();
       else if (cameraTargetInput === 'return-serial') lookupReturnDevice();
       else if (cameraTargetInput === 'damage-serial') lookupDamageDevice();
       else if (cameraTargetInput === 'lookup-serial') lookupDeviceHistory();
-    }, 400);
-    cameraTargetInput = null;
+      cameraTargetInput = null;
+    }, 300);
+  }
+
+  function promptManualEntry() {
+    var manual = prompt('Could not read barcode.\nEnter serial number manually:');
+    if (manual && manual.trim()) handleBarcodeResult(manual.trim().toUpperCase());
   }
 
   // ── Google Sign In ────────────────────────────────────────
   function signIn() {
     var client = google.accounts.oauth2.initTokenClient({
       client_id: GOOGLE_CLIENT_ID,
-      scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/cloud-platform',
+      scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
       callback: function(response) {
         if (response.error) { showLoginError('Sign in failed: ' + response.error); return; }
         accessToken = response.access_token;
@@ -636,11 +707,9 @@
       });
   }
 
-  // ── API Call ─────────────────────────────────────────────
+  // ── API ──────────────────────────────────────────────────
   function api(action, params) {
-    if (!APPS_SCRIPT_URL) {
-      return Promise.reject(new Error('Apps Script URL not configured.'));
-    }
+    if (!APPS_SCRIPT_URL) return Promise.reject(new Error('Apps Script URL not configured.'));
     return fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
@@ -847,8 +916,7 @@
     list.innerHTML = '';
     fees.forEach(function(f, idx) {
       var item = document.createElement('div');
-      item.className = 'damage-check-item';
-      item.id = 'dmg-' + idx;
+      item.className = 'damage-check-item'; item.id = 'dmg-' + idx;
       item.setAttribute('onclick', 'toggleDamage(' + idx + ')');
       item.innerHTML =
         '<div class="damage-check-box" id="dmg-box-' + idx + '"></div>' +
@@ -900,8 +968,7 @@
   }
 
   function resetDamage() {
-    damageState = { device: null };
-    checkedDamages = {};
+    damageState = { device: null }; checkedDamages = {};
     document.getElementById('damage-serial').value = '';
     document.getElementById('damage-student').value = '';
     document.getElementById('damage-checklist').innerHTML = '';
