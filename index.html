@@ -658,6 +658,9 @@
   }
 
   function signOut() {
+    if (accessToken) {
+      fetch('https://oauth2.googleapis.com/revoke?token=' + accessToken, { method: 'POST' });
+    }
     localStorage.removeItem('wcsc_token');
     localStorage.removeItem('wcsc_user');
     accessToken = null; currentUser = null;
