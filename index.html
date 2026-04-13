@@ -548,7 +548,11 @@
     });
   }
 
-  function startZXing(video) {
+    function startZXing(video) {
+    if (!cameraActive) return;
+    // TEMP DEBUG
+    showToast('ZXing keys: ' + Object.keys(window).filter(function(k){ return k.toLowerCase().includes('zxing'); }).join(', '), 'error');
+    try {
     if (!cameraActive) return;
     try {
       var codeReader = new ZXingLibrary.BrowserMultiFormatReader();
