@@ -615,7 +615,7 @@
             document.getElementById('loading-overlay').classList.remove('hidden');
             initApp();
           })
-          .catch(function() { showLoginError('Could not verify account. Try again.'); });
+          .catch(function(err) { showLoginError('Error: ' + err.message + ' | ' + err.toString()); });
       }
     });
     client.requestAccessToken();
@@ -646,10 +646,10 @@
         document.getElementById('app').classList.add('visible');
         showPage('assign');
       })
-      .catch(function() {
+      .catch(function(err) {
         document.getElementById('loading-overlay').classList.add('hidden');
         document.getElementById('login-screen').classList.remove('hidden');
-        showLoginError('Connection error. Check your network.');
+        showLoginError('Init error: ' + err.message + ' | ' + err.toString());
       });
   }
 
