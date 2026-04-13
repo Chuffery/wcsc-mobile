@@ -8,7 +8,6 @@
   <meta name="apple-mobile-web-app-title" content="WCSC Devices">
   <title>WCSC Chromebook Manager</title>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.19.1/umd/index.min.js" onerror="alert('ZXing failed to load')"></script>
   <style>
     :root {
       --navy: #1a3a5c;
@@ -27,7 +26,9 @@
       --header-height: 56px;
       --nav-height: 64px;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
     html, body {
       width: 100%; height: 100%; overflow-x: hidden;
       font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
@@ -35,7 +36,7 @@
       -webkit-text-size-adjust: 100%;
     }
 
-    /* ── Login ── */
+    /* ── Login Screen ── */
     #login-screen {
       position: fixed; inset: 0; background: var(--navy);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -54,7 +55,7 @@
       box-shadow: 0 4px 16px rgba(0,0,0,0.3);
     }
     .login-btn:active { transform: scale(0.98); }
-    .login-error { color: #ff6b6b; font-size: 13px; margin-top: 16px; text-align: center; }
+    .login-error { color: #ff6b6b; font-size: 13px; margin-top: 16px; text-align: center; max-width: 280px; }
 
     /* ── App Shell ── */
     #app { display: none; flex-direction: column; height: 100vh; }
@@ -63,14 +64,17 @@
     /* ── Header ── */
     .header {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      height: var(--header-height); background: var(--navy);
+      height: var(--header-height);
+      background: var(--navy);
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 16px; padding-top: env(safe-area-inset-top);
+      padding: 0 16px;
+      padding-top: env(safe-area-inset-top);
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
     .header-title { font-size: 16px; font-weight: 700; color: var(--gold-light); }
     .header-user { font-size: 11px; color: rgba(255,255,255,0.5); max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .header-signout { font-size: 12px; color: rgba(255,255,255,0.4); cursor: pointer; padding: 4px 8px; }
+    .header-signout:active { color: white; }
 
     /* ── Content ── */
     .content {
@@ -82,8 +86,8 @@
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
       height: var(--nav-height); background: var(--navy);
-      border-top: 1px solid rgba(255,255,255,0.1); display: flex;
-      padding-bottom: env(safe-area-inset-bottom);
+      border-top: 1px solid rgba(255,255,255,0.1);
+      display: flex; padding-bottom: env(safe-area-inset-bottom);
     }
     .nav-item {
       flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -105,87 +109,58 @@
     .card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; margin-bottom: 16px; }
     .card-title { font-size: 12px; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; }
 
-    /* ── Serial Input Row ── */
-    .serial-row { display: flex; gap: 10px; align-items: center; }
-    .serial-row input { flex: 1; }
-    .scan-btn {
-      background: var(--gold); color: white; border: none;
-      width: 50px; height: 50px; border-radius: 10px; font-size: 22px;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    .scan-btn:active { opacity: 0.8; }
-
-    /* ── Camera Overlay ── */
-    #camera-overlay {
-      position: fixed; inset: 0; z-index: 9990; background: #000;
-      display: none; flex-direction: column; align-items: center; justify-content: center;
-    }
-    #camera-overlay.active { display: flex; }
-    #camera-video {
-      width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0;
-    }
-    .camera-ui {
-      position: relative; z-index: 10;
-      display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-      height: 100%; width: 100%;
-      padding: 60px 24px 40px;
-      padding-top: max(60px, calc(env(safe-area-inset-top) + 20px));
-      padding-bottom: max(40px, calc(env(safe-area-inset-bottom) + 20px));
-    }
-    .camera-header { text-align: center; color: white; }
-    .camera-header-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-    .camera-header-sub { font-size: 13px; opacity: 0.7; }
-    .camera-viewfinder {
-      width: 280px; height: 160px;
-      border: 2px solid rgba(255,255,255,0.3); border-radius: 16px;
-      position: relative; box-shadow: 0 0 0 2000px rgba(0,0,0,0.5);
-    }
-    .camera-viewfinder::before, .camera-viewfinder::after {
-      content: ''; position: absolute; width: 28px; height: 28px;
-      border-color: var(--gold); border-style: solid;
-    }
-    .camera-viewfinder::before {
-      top: -2px; left: -2px; border-width: 3px 0 0 3px; border-radius: 14px 0 0 0;
-    }
-    .camera-viewfinder::after {
-      bottom: -2px; right: -2px; border-width: 0 3px 3px 0; border-radius: 0 0 14px 0;
-    }
-    .scan-line {
-      position: absolute; left: 10px; right: 10px; height: 2px;
-      background: var(--gold); box-shadow: 0 0 8px var(--gold), 0 0 16px var(--gold);
-      animation: scanLine 2s ease-in-out infinite; border-radius: 2px;
-    }
-    @keyframes scanLine {
-      0% { top: 16px; } 50% { top: calc(100% - 16px); } 100% { top: 16px; }
-    }
-    .camera-status {
-      color: white; font-size: 14px; text-align: center;
-      background: rgba(0,0,0,0.5); padding: 8px 16px; border-radius: 20px;
-      min-height: 36px; display: flex; align-items: center; justify-content: center;
-    }
-    .camera-close-btn {
-      background: rgba(255,255,255,0.15); color: white; border: 1.5px solid rgba(255,255,255,0.3);
-      padding: 14px 40px; border-radius: 30px; font-size: 16px; font-weight: 700; cursor: pointer;
-    }
-    .camera-close-btn:active { background: rgba(255,255,255,0.25); }
-
     /* ── Form Elements ── */
     .form-group { margin-bottom: 14px; }
     .form-group label { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
     .form-group input, .form-group textarea {
-      width: 100%; padding: 13px 14px; border: 1.5px solid var(--border); border-radius: 10px;
-      font-size: 16px; color: var(--text); background: white; -webkit-appearance: none; appearance: none;
+      width: 100%; padding: 13px 14px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: 16px; color: var(--text); background: white;
+      -webkit-appearance: none; appearance: none;
     }
     .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--navy); }
     .form-group textarea { resize: none; min-height: 80px; font-family: inherit; }
     .mono { font-family: 'SF Mono', Monaco, monospace !important; letter-spacing: 1px; }
 
+    /* ── Serial Input Row ── */
+    .serial-row { display: flex; gap: 10px; align-items: stretch; margin-bottom: 14px; }
+    .serial-row input {
+      flex: 1; padding: 13px 14px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: 16px; color: var(--text); background: white;
+      -webkit-appearance: none; appearance: none;
+      font-family: 'SF Mono', Monaco, monospace; letter-spacing: 1px;
+    }
+    .serial-row input:focus { outline: none; border-color: var(--navy); }
+    .scan-btn {
+      background: var(--navy); color: white; border: none;
+      width: 52px; border-radius: 10px; font-size: 22px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; -webkit-appearance: none;
+    }
+    .scan-btn:active { background: var(--navy-light); }
+
+    /* Hidden camera input */
+    #camera-input { display: none; }
+
+    /* ── Decoding overlay ── */
+    #decode-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(26,58,92,0.92); z-index: 9998;
+      flex-direction: column; align-items: center; justify-content: center;
+      color: white; gap: 16px;
+    }
+    #decode-overlay.active { display: flex; }
+    .decode-spinner { width: 48px; height: 48px; border: 4px solid rgba(255,255,255,0.2); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    .decode-text { font-size: 16px; font-weight: 600; }
+    .decode-sub { font-size: 13px; opacity: 0.7; }
+
     /* ── Buttons ── */
     .btn {
-      width: 100%; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: 700;
-      border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
-      gap: 8px; margin-bottom: 10px; transition: opacity 0.15s;
+      width: 100%; padding: 15px; border-radius: 10px;
+      font-size: 16px; font-weight: 700; border: none;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+      margin-bottom: 10px; -webkit-appearance: none;
     }
     .btn:active { opacity: 0.8; }
     .btn:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -204,13 +179,13 @@
     .info-panel { background: #f0f4f8; border-radius: 10px; padding: 14px; border-left: 4px solid var(--navy); margin-top: 12px; }
     .info-row { display: flex; gap: 8px; margin-bottom: 6px; font-size: 14px; }
     .info-label { font-weight: 600; color: var(--text-muted); min-width: 100px; font-size: 13px; }
-    .info-val { color: var(--text); flex: 1; }
+    .info-val { color: var(--text); flex: 1; word-break: break-all; }
 
     /* ── Student Results ── */
     .student-result-btn {
       display: block; width: 100%; text-align: left; padding: 14px 16px;
       background: white; border: 1.5px solid var(--border); border-radius: 10px;
-      margin-bottom: 8px; cursor: pointer; font-size: 15px; color: var(--text);
+      margin-bottom: 8px; cursor: pointer; color: var(--text);
       -webkit-appearance: none;
     }
     .student-result-btn:active { background: #eaf1fb; border-color: var(--navy); }
@@ -219,20 +194,23 @@
 
     /* ── Damage Checklist ── */
     .damage-check-item {
-      display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: white;
-      border: 1.5px solid var(--border); border-radius: 10px; margin-bottom: 8px; cursor: pointer;
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px; background: white;
+      border: 1.5px solid var(--border); border-radius: 10px; margin-bottom: 8px;
+      cursor: pointer;
     }
     .damage-check-item.checked { border-color: var(--navy); background: #eaf1fb; }
     .damage-check-item:active { opacity: 0.8; }
     .damage-check-box {
-      width: 24px; height: 24px; border: 2px solid var(--border); border-radius: 6px;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px;
+      width: 26px; height: 26px; border: 2px solid var(--border); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      font-size: 15px;
     }
     .damage-check-item.checked .damage-check-box { background: var(--navy); border-color: var(--navy); color: white; }
     .damage-check-info { flex: 1; }
-    .damage-check-name { font-size: 15px; font-weight: 600; color: var(--text); }
-    .damage-check-fee-label { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
-    .damage-check-item.checked .damage-check-fee-label { color: var(--navy); font-weight: 600; }
+    .damage-check-name { font-size: 15px; font-weight: 600; }
+    .damage-check-fee { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+    .damage-check-item.checked .damage-check-fee { color: var(--navy); font-weight: 600; }
 
     /* ── Total Bar ── */
     .total-bar {
@@ -244,22 +222,24 @@
     .total-bar-amount { font-size: 26px; font-weight: 800; }
 
     /* ── History Items ── */
-    .history-item { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 14px; }
+    .history-item { padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
     .history-item:last-child { border-bottom: none; }
     .history-item-title { font-weight: 600; margin-bottom: 3px; }
     .history-item-sub { font-size: 12px; color: var(--text-muted); }
 
-    /* ── Badges ── */
-    .badge { display: inline-block; padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+    /* ── Badge ── */
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
     .badge-active { background: #eafaf1; color: var(--success); }
     .badge-returned { background: #eaf1fb; color: #1a5276; }
     .badge-unpaid { background: #fdf2f2; color: var(--error); }
     .badge-paid { background: #eafaf1; color: var(--success); }
     .badge-unbilled { background: #fff8e1; color: #d68910; }
 
-    /* ── Misc ── */
+    /* ── Spinner ── */
     .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Toast ── */
     #toast {
       position: fixed; bottom: calc(var(--nav-height) + 16px); left: 16px; right: 16px;
       background: var(--navy); color: white; padding: 14px 18px; border-radius: 10px;
@@ -269,6 +249,8 @@
     #toast.show { transform: translateY(0); opacity: 1; }
     #toast.toast-success { border-left: 4px solid var(--success); }
     #toast.toast-error { border-left: 4px solid var(--error); }
+
+    /* ── Loading ── */
     #loading-overlay {
       position: fixed; inset: 0; background: var(--navy);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -276,19 +258,34 @@
     }
     #loading-overlay.hidden { display: none; }
     .loading-spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.2); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+
     .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
     .hidden { display: none !important; }
     .mt-12 { margin-top: 12px; }
-    .text-muted { color: var(--text-muted); font-size: 13px; }
+    .text-muted { color: var(--text-muted); font-size: 13px; padding: 8px 0; }
   </style>
 </head>
 <body>
 
+<!-- Hidden camera file input — triggers native iOS camera -->
+<input type="file" id="camera-input" accept="image/*" capture="environment">
+<!-- Hidden canvas for barcode decoding -->
+<canvas id="decode-canvas" style="display:none;"></canvas>
+
+<!-- Loading Overlay -->
 <div id="loading-overlay">
   <div class="loading-spinner"></div>
   <div style="font-size:14px;opacity:0.7;">Loading...</div>
 </div>
 
+<!-- Decoding Overlay -->
+<div id="decode-overlay">
+  <div class="decode-spinner"></div>
+  <div class="decode-text">Reading barcode...</div>
+  <div class="decode-sub">Please wait</div>
+</div>
+
+<!-- Login Screen -->
 <div id="login-screen" class="hidden">
   <div class="login-logo">📱</div>
   <div class="login-district">Warrick County School Corporation</div>
@@ -306,22 +303,7 @@
   <div class="login-error hidden" id="login-error"></div>
 </div>
 
-<!-- Camera Overlay -->
-<div id="camera-overlay">
-  <video id="camera-video" autoplay playsinline muted></video>
-  <div class="camera-ui">
-    <div class="camera-header">
-      <div class="camera-header-title">Scan Barcode</div>
-      <div class="camera-header-sub">Point camera at the device serial number barcode</div>
-    </div>
-    <div class="camera-viewfinder">
-      <div class="scan-line"></div>
-    </div>
-    <div class="camera-status" id="camera-status">Initializing camera...</div>
-    <button class="camera-close-btn" onclick="closeCamera()">Cancel</button>
-  </div>
-</div>
-
+<!-- App -->
 <div id="app">
   <div class="header">
     <div>
@@ -333,7 +315,7 @@
 
   <div class="content">
 
-    <!-- ASSIGN -->
+    <!-- ASSIGN PAGE -->
     <div class="page active" id="page-assign">
       <div class="page-title">Assign Device</div>
       <div class="page-sub">Scan or enter a serial number</div>
@@ -343,10 +325,10 @@
           <label>Serial Number</label>
           <div class="serial-row">
             <input type="text" id="assign-serial" class="mono" placeholder="Scan or type SN..." autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
-            <button class="scan-btn" onclick="openCamera('assign-serial')">📷</button>
+            <button class="scan-btn" onclick="triggerCamera('assign-serial')" title="Scan barcode">📷</button>
           </div>
         </div>
-        <button class="btn btn-primary" onclick="lookupAssignDevice()">🔍 Look Up Device</button>
+        <button class="btn btn-primary" id="assign-lookup-btn" onclick="lookupAssignDevice()">🔍 Look Up Device</button>
         <div id="assign-device-result" class="hidden"></div>
       </div>
       <div class="card hidden" id="assign-student-card">
@@ -355,7 +337,7 @@
           <label>Search Student</label>
           <input type="text" id="assign-student-search" placeholder="Type student name...">
         </div>
-        <button class="btn btn-primary" onclick="searchStudentsFor('assign')">🔍 Search</button>
+        <button class="btn btn-primary" onclick="searchStudents()">🔍 Search</button>
         <div id="assign-student-results" class="hidden mt-12"></div>
         <div id="assign-selected-student" class="hidden"></div>
       </div>
@@ -371,7 +353,7 @@
       </div>
     </div>
 
-    <!-- RETURN -->
+    <!-- RETURN PAGE -->
     <div class="page" id="page-return">
       <div class="page-title">Return Device</div>
       <div class="page-sub">Check a device back in</div>
@@ -380,16 +362,16 @@
           <label>Serial Number</label>
           <div class="serial-row">
             <input type="text" id="return-serial" class="mono" placeholder="Scan or type SN..." autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
-            <button class="scan-btn" onclick="openCamera('return-serial')">📷</button>
+            <button class="scan-btn" onclick="triggerCamera('return-serial')" title="Scan barcode">📷</button>
           </div>
         </div>
-        <button class="btn btn-primary" onclick="lookupReturnDevice()">🔍 Look Up Device</button>
+        <button class="btn btn-primary" id="return-lookup-btn" onclick="lookupReturnDevice()">🔍 Look Up Device</button>
         <div id="return-device-info" class="hidden"></div>
         <div id="return-confirm" class="hidden">
           <div class="divider"></div>
           <div class="form-group">
             <label>Return Notes (optional)</label>
-            <textarea id="return-notes" placeholder="Condition notes, damage observed..."></textarea>
+            <textarea id="return-notes" placeholder="Condition notes..."></textarea>
           </div>
           <button class="btn btn-success" onclick="confirmReturn()">✅ Confirm Return</button>
           <button class="btn btn-outline" onclick="resetReturn()">✕ Cancel</button>
@@ -398,7 +380,7 @@
       </div>
     </div>
 
-    <!-- DAMAGE -->
+    <!-- DAMAGE PAGE -->
     <div class="page" id="page-damage">
       <div class="page-title">Log Damage</div>
       <div class="page-sub">Select all damage types that apply</div>
@@ -408,17 +390,17 @@
           <label>Serial Number</label>
           <div class="serial-row">
             <input type="text" id="damage-serial" class="mono" placeholder="Scan or type SN..." autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
-            <button class="scan-btn" onclick="openCamera('damage-serial')">📷</button>
+            <button class="scan-btn" onclick="triggerCamera('damage-serial')" title="Scan barcode">📷</button>
           </div>
         </div>
-        <button class="btn btn-primary" onclick="lookupDamageDevice()">🔍 Look Up Device</button>
+        <button class="btn btn-primary" id="damage-lookup-btn" onclick="lookupDamageDevice()">🔍 Look Up Device</button>
         <div id="damage-device-info" class="hidden"></div>
       </div>
       <div class="card hidden" id="damage-form-card">
         <div class="card-title">Damage Items</div>
         <div class="form-group">
           <label>Student Email</label>
-          <input type="text" id="damage-student" placeholder="student@warrick.k12.in.us" autocapitalize="none">
+          <input type="text" id="damage-student" placeholder="student@warrick.k12.in.us" autocapitalize="none" autocorrect="off">
         </div>
         <div id="damage-checklist"></div>
         <div class="total-bar">
@@ -431,7 +413,7 @@
       </div>
     </div>
 
-    <!-- LOOKUP -->
+    <!-- LOOKUP PAGE -->
     <div class="page" id="page-lookup">
       <div class="page-title">Device Lookup</div>
       <div class="page-sub">Full history for any device</div>
@@ -440,21 +422,33 @@
           <label>Serial Number</label>
           <div class="serial-row">
             <input type="text" id="lookup-serial" class="mono" placeholder="Scan or type SN..." autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
-            <button class="scan-btn" onclick="openCamera('lookup-serial')">📷</button>
+            <button class="scan-btn" onclick="triggerCamera('lookup-serial')" title="Scan barcode">📷</button>
           </div>
         </div>
-        <button class="btn btn-primary" onclick="lookupDeviceHistory()">🔎 Look Up</button>
+        <button class="btn btn-primary" id="lookup-btn" onclick="lookupDeviceHistory()">🔎 Look Up</button>
         <div id="lookup-result" class="hidden"></div>
       </div>
       <div id="lookup-details" class="hidden">
-        <div class="card"><div class="card-title">Device Info</div><div id="lookup-device-info"></div></div>
-        <div class="card"><div class="card-title">Current Assignment</div><div id="lookup-current-assignment"></div></div>
-        <div class="card"><div class="card-title">Assignment History</div><div id="lookup-assignment-history"></div></div>
-        <div class="card"><div class="card-title">Damage History</div><div id="lookup-damage-history"></div></div>
+        <div class="card">
+          <div class="card-title">Device Info</div>
+          <div id="lookup-device-info"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Current Assignment</div>
+          <div id="lookup-current-assignment"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Assignment History</div>
+          <div id="lookup-assignment-history"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Damage History</div>
+          <div id="lookup-damage-history"></div>
+        </div>
       </div>
     </div>
 
-  </div>
+  </div><!-- /content -->
 
   <div class="bottom-nav">
     <div class="nav-item active" onclick="showPage('assign')" id="bnav-assign"><span class="nav-icon">🔗</span>Assign</div>
@@ -467,9 +461,11 @@
 <div id="toast"></div>
 
 <script>
+  // ── Config ───────────────────────────────────────────────
   var GOOGLE_CLIENT_ID = '459632940971-tqevq3kpec9lu12afsfiochd2k3hqjn9.apps.googleusercontent.com';
   var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRlhViqGwTs-rwB1_JcEsI8twL8Rd2djf_bkc5iH_vHLAp5ui9xMjBkXzAeuaPhL3K/exec'; // ← PASTE YOUR APPS SCRIPT WEB APP URL HERE
 
+  // ── State ────────────────────────────────────────────────
   var accessToken = null;
   var currentUser = null;
   var appData = { feeSchedule: [] };
@@ -478,19 +474,28 @@
   var damageState = { device: null };
   var studentCache = [];
   var checkedDamages = {};
-
-  // Camera state
-  var cameraStream = null;
-  var cameraActive = false;
   var cameraTargetInput = null;
-  var barcodeDetector = null;
-  var scanAnimFrame = null;
 
+  // ── Init ─────────────────────────────────────────────────
   window.onload = function() {
-    // Init BarcodeDetector
-    // ZXing works on all iOS versions including betas
-    barcodeDetector = true; // flag that scanner is available
+    // Set up camera input handler
+    var camInput = document.getElementById('camera-input');
+    camInput.addEventListener('change', function(e) {
+      if (e.target.files && e.target.files[0]) {
+        processBarcodImage(e.target.files[0]);
+      }
+      // Reset input so same file can be selected again
+      e.target.value = '';
+    });
 
+    // Enter key handlers for serial fields
+    document.getElementById('assign-serial').addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); lookupAssignDevice(); } });
+    document.getElementById('return-serial').addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); lookupReturnDevice(); } });
+    document.getElementById('damage-serial').addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); lookupDamageDevice(); } });
+    document.getElementById('lookup-serial').addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); lookupDeviceHistory(); } });
+    document.getElementById('assign-student-search').addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); searchStudents(); } });
+
+    // Check stored session
     var stored = localStorage.getItem('wcsc_token');
     var storedUser = localStorage.getItem('wcsc_user');
     if (stored && storedUser) {
@@ -501,99 +506,74 @@
       document.getElementById('loading-overlay').classList.add('hidden');
       document.getElementById('login-screen').classList.remove('hidden');
     }
-
-    ['assign-serial','return-serial','damage-serial','lookup-serial'].forEach(function(id) {
-      document.getElementById(id).addEventListener('keydown', function(e) {
-        if (e.key !== 'Enter') return;
-        e.preventDefault();
-        if (id === 'assign-serial') lookupAssignDevice();
-        else if (id === 'return-serial') lookupReturnDevice();
-        else if (id === 'damage-serial') lookupDamageDevice();
-        else if (id === 'lookup-serial') lookupDeviceHistory();
-      });
-    });
-
-    document.getElementById('assign-student-search').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') { e.preventDefault(); searchStudentsFor('assign'); }
-    });
   };
 
-  // ── Camera ───────────────────────────────────────────────
-  function openCamera(targetInputId) {
+  // ── Camera / Barcode ─────────────────────────────────────
+  function triggerCamera(targetInputId) {
     cameraTargetInput = targetInputId;
-    cameraActive = true;
-    document.getElementById('camera-status').textContent = 'Starting camera...';
-    document.getElementById('camera-overlay').classList.add('active');
+    document.getElementById('camera-input').click();
+  }
 
-    navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
-    })
-    .then(function(stream) {
-      cameraStream = stream;
-      var video = document.getElementById('camera-video');
-      video.srcObject = stream;
-      video.onloadedmetadata = function() {
-        video.play();
-        document.getElementById('camera-status').textContent = 'Scanning...';
-        startZXing(video);
-      };
-    })
-    .catch(function(err) {
-      closeCamera();
-      if (err.name === 'NotAllowedError') {
-        showToast('Camera permission denied. Go to Settings → Safari → Camera.', 'error');
+  function processBarcodImage(file) {
+    document.getElementById('decode-overlay').classList.add('active');
+
+    var img = new Image();
+    var url = URL.createObjectURL(file);
+    img.onload = function() {
+      var canvas = document.getElementById('decode-canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      URL.revokeObjectURL(url);
+
+      // Try native BarcodeDetector first (iOS 17+ with flag enabled)
+      if ('BarcodeDetector' in window) {
+        var detector = new BarcodeDetector();
+        detector.detect(canvas)
+          .then(function(barcodes) {
+            document.getElementById('decode-overlay').classList.remove('active');
+            if (barcodes && barcodes.length > 0) {
+              handleBarcodeResult(barcodes[0].rawValue);
+            } else {
+              showToast('No barcode found — try again with better lighting', 'error');
+            }
+          })
+          .catch(function() {
+            document.getElementById('decode-overlay').classList.remove('active');
+            showToast('Could not read barcode — try again', 'error');
+          });
       } else {
-        showToast('Camera error: ' + err.message, 'error');
+        // Fallback: prompt manual entry
+        document.getElementById('decode-overlay').classList.remove('active');
+        var manual = prompt('Could not auto-read barcode. Enter serial number manually:');
+        if (manual) handleBarcodeResult(manual.trim().toUpperCase());
       }
-    });
+    };
+    img.onerror = function() {
+      URL.revokeObjectURL(url);
+      document.getElementById('decode-overlay').classList.remove('active');
+      showToast('Could not load image', 'error');
+    };
+    img.src = url;
   }
 
-    function startZXing(video) {
-    if (!cameraActive) return;
-    // TEMP DEBUG
-    showToast('ZXing keys: ' + Object.keys(window).filter(function(k){ return k.toLowerCase().includes('zxing'); }).join(', '), 'error');
-    try {
-    if (!cameraActive) return;
-    try {
-      var codeReader = new ZXingLibrary.BrowserMultiFormatReader();
-      codeReader.decodeFromVideoElement(video)
-        .then(function(result) {
-          if (result && cameraActive) {
-            var value = result.getText();
-            document.getElementById('camera-status').textContent = '✅ Got it: ' + value;
-            navigator.vibrate && navigator.vibrate(50);
-            setTimeout(function() {
-              var input = document.getElementById(cameraTargetInput);
-              input.value = value.toUpperCase();
-              closeCamera();
-              if (cameraTargetInput === 'assign-serial') lookupAssignDevice();
-              else if (cameraTargetInput === 'return-serial') lookupReturnDevice();
-              else if (cameraTargetInput === 'damage-serial') lookupDamageDevice();
-              else if (cameraTargetInput === 'lookup-serial') lookupDeviceHistory();
-            }, 300);
-          }
-        })
-        .catch(function(err) {
-          if (cameraActive) showToast('Could not read barcode — try again', 'error');
-        });
-    } catch(e) {
-      showToast('Scanner error: ' + e.message, 'error');
-      closeCamera();
-    }
-  }
-
-  function scanLoop() {} // no longer used, kept to avoid reference errors
-
-  function closeCamera() {
-    cameraActive = false;
-    if (scanAnimFrame) { cancelAnimationFrame(scanAnimFrame); scanAnimFrame = null; }
-    if (cameraStream) { cameraStream.getTracks().forEach(function(t) { t.stop(); }); cameraStream = null; }
-    document.getElementById('camera-video').srcObject = null;
-    document.getElementById('camera-overlay').classList.remove('active');
+  function handleBarcodeResult(value) {
+    if (!value || !cameraTargetInput) return;
+    var input = document.getElementById(cameraTargetInput);
+    input.value = value.toUpperCase();
+    showToast('Barcode read: ' + value, 'success');
+    // Auto-trigger lookup
+    setTimeout(function() {
+      if (cameraTargetInput === 'assign-serial') lookupAssignDevice();
+      else if (cameraTargetInput === 'return-serial') lookupReturnDevice();
+      else if (cameraTargetInput === 'damage-serial') lookupDamageDevice();
+      else if (cameraTargetInput === 'lookup-serial') lookupDeviceHistory();
+    }, 400);
     cameraTargetInput = null;
   }
 
-  // ── Auth ─────────────────────────────────────────────────
+  // ── Google Sign In ────────────────────────────────────────
   function signIn() {
     var client = google.accounts.oauth2.initTokenClient({
       client_id: GOOGLE_CLIENT_ID,
@@ -601,21 +581,23 @@
       callback: function(response) {
         if (response.error) { showLoginError('Sign in failed: ' + response.error); return; }
         accessToken = response.access_token;
-        fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { 'Authorization': 'Bearer ' + accessToken } })
-          .then(function(r) { return r.json(); })
-          .then(function(info) {
-            if (!info.email.endsWith('@warrick.k12.in.us')) {
-              showLoginError('Access restricted to WCSC accounts only');
-              accessToken = null; return;
-            }
-            currentUser = info.email;
-            localStorage.setItem('wcsc_token', accessToken);
-            localStorage.setItem('wcsc_user', currentUser);
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('loading-overlay').classList.remove('hidden');
-            initApp();
-          })
-          .catch(function(err) { showLoginError('Error: ' + err.message + ' | ' + err.toString()); });
+        fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { 'Authorization': 'Bearer ' + accessToken }
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(info) {
+          if (!info.email.endsWith('@warrick.k12.in.us')) {
+            showLoginError('Access restricted to WCSC accounts (@warrick.k12.in.us)');
+            accessToken = null; return;
+          }
+          currentUser = info.email;
+          localStorage.setItem('wcsc_token', accessToken);
+          localStorage.setItem('wcsc_user', currentUser);
+          document.getElementById('login-screen').classList.add('hidden');
+          document.getElementById('loading-overlay').classList.remove('hidden');
+          initApp();
+        })
+        .catch(function(err) { showLoginError('Could not verify account: ' + err.message); });
       }
     });
     client.requestAccessToken();
@@ -623,8 +605,7 @@
 
   function showLoginError(msg) {
     var el = document.getElementById('login-error');
-    el.textContent = msg;
-    el.classList.remove('hidden');
+    el.textContent = msg; el.classList.remove('hidden');
   }
 
   function signOut() {
@@ -639,7 +620,10 @@
   function initApp() {
     api('init', {})
       .then(function(data) {
-        if (!data.success) { signOut(); return; }
+        if (!data.success) {
+          if (data.error && data.error.includes('token')) { signOut(); return; }
+          showToast(data.error || 'Init failed', 'error'); return;
+        }
         appData.feeSchedule = data.feeSchedule || [];
         document.getElementById('header-user').textContent = data.user || currentUser;
         document.getElementById('loading-overlay').classList.add('hidden');
@@ -649,18 +633,21 @@
       .catch(function(err) {
         document.getElementById('loading-overlay').classList.add('hidden');
         document.getElementById('login-screen').classList.remove('hidden');
-        showLoginError('Init error: ' + err.message + ' | ' + err.toString());
+        showLoginError('Connection error: ' + err.message);
       });
   }
 
-  // ── API ──────────────────────────────────────────────────
+  // ── API Call ─────────────────────────────────────────────
   function api(action, params) {
-    if (!APPS_SCRIPT_URL) return Promise.reject(new Error('Apps Script URL not set.'));
+    if (!APPS_SCRIPT_URL) {
+      return Promise.reject(new Error('Apps Script URL not configured.'));
+    }
     return fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify({ token: accessToken, action: action, params: params })
-    }).then(function(r) { return r.json(); });
+    })
+    .then(function(r) { return r.json(); });
   }
 
   // ── Navigation ───────────────────────────────────────────
@@ -672,16 +659,14 @@
     if (pageEl) pageEl.classList.add('active');
     if (bnavEl) bnavEl.classList.add('active');
     document.querySelector('.content').scrollTop = 0;
-    var focusMap = { 'assign': 'assign-serial', 'return': 'return-serial', 'damage': 'damage-serial', 'lookup': 'lookup-serial' };
-    if (page === 'assign') resetAssign();
-    if (page === 'return') resetReturn();
-    if (page === 'damage') resetDamage();
-    if (page === 'lookup') resetLookup();
-    if (focusMap[page]) setTimeout(function() { document.getElementById(focusMap[page]).focus(); }, 300);
+    if (page === 'assign') { resetAssign(); setTimeout(function() { document.getElementById('assign-serial').focus(); }, 300); }
+    if (page === 'return') { resetReturn(); setTimeout(function() { document.getElementById('return-serial').focus(); }, 300); }
+    if (page === 'damage') { resetDamage(); setTimeout(function() { document.getElementById('damage-serial').focus(); }, 300); }
+    if (page === 'lookup') { resetLookup(); setTimeout(function() { document.getElementById('lookup-serial').focus(); }, 300); }
   }
 
   // ── Student Search ───────────────────────────────────────
-  function searchStudentsFor(context) {
+  function searchStudents() {
     var query = document.getElementById('assign-student-search').value.trim();
     if (query.length < 2) { showToast('Enter at least 2 characters', 'error'); return; }
     api('searchStudents', { query: query })
@@ -689,43 +674,43 @@
         var container = document.getElementById('assign-student-results');
         container.innerHTML = '';
         if (!res.success || !res.students || res.students.length === 0) {
-          container.innerHTML = '<p class="text-muted" style="padding:8px 0;">No students found.</p>';
+          container.innerHTML = '<p class="text-muted">No students found.</p>';
           container.classList.remove('hidden'); return;
         }
         studentCache = res.students;
         res.students.forEach(function(s, idx) {
           var btn = document.createElement('button');
-          btn.className = 'student-result-btn';
-          btn.type = 'button';
-          btn.innerHTML = '<span class="student-result-name">' + s.fullName + '</span><span class="student-result-sub">' + s.email + (s.studentId ? ' · ID: ' + s.studentId : '') + '</span>';
+          btn.className = 'student-result-btn'; btn.type = 'button';
+          btn.innerHTML = '<span class="student-result-name">' + s.fullName + '</span><span class="student-result-sub">' + s.email + (s.studentId ? ' · ID: ' + s.studentId : '') + ' · ' + s.orgUnit + '</span>';
           btn.setAttribute('onclick', 'selectStudent(' + idx + ')');
           container.appendChild(btn);
         });
         container.classList.remove('hidden');
       })
-      .catch(function() { showToast('Search error', 'error'); });
+      .catch(function(err) { showToast('Search error: ' + err.message, 'error'); });
   }
 
   function selectStudent(idx) {
-    var s = studentCache[idx];
-    if (!s) return;
+    var student = studentCache[idx];
+    if (!student) return;
     document.getElementById('assign-student-results').classList.add('hidden');
-    assignState.student = s;
+    assignState.student = student;
     document.getElementById('assign-selected-student').innerHTML =
       '<div class="info-panel">' +
-      '<div class="info-row"><span class="info-label">Name</span><span class="info-val">' + s.fullName + '</span></div>' +
-      '<div class="info-row"><span class="info-label">Email</span><span class="info-val">' + s.email + '</span></div>' +
-      (s.studentId ? '<div class="info-row"><span class="info-label">Student ID</span><span class="info-val"><strong>' + s.studentId + '</strong></span></div>' : '') +
+      '<div class="info-row"><span class="info-label">Name</span><span class="info-val">' + student.fullName + '</span></div>' +
+      '<div class="info-row"><span class="info-label">Email</span><span class="info-val">' + student.email + '</span></div>' +
+      (student.studentId ? '<div class="info-row"><span class="info-label">Student ID</span><span class="info-val"><strong>' + student.studentId + '</strong></span></div>' : '') +
       '</div>';
     document.getElementById('assign-selected-student').classList.remove('hidden');
     document.getElementById('assign-confirm-card').classList.remove('hidden');
   }
 
-  // ── Assign ───────────────────────────────────────────────
+  // ── Assign Device ────────────────────────────────────────
   function lookupAssignDevice() {
     var serial = document.getElementById('assign-serial').value.trim().toUpperCase();
     if (!serial) return;
-    var btn = event.target; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Looking up...';
+    var btn = document.getElementById('assign-lookup-btn');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Looking up...';
     api('lookupDevice', { serialNumber: serial })
       .then(function(res) {
         btn.disabled = false; btn.innerHTML = '🔍 Look Up Device';
@@ -738,36 +723,42 @@
         document.getElementById('assign-student-card').classList.remove('hidden');
         setTimeout(function() { document.getElementById('assign-student-search').focus(); }, 300);
       })
-      .catch(function() { btn.disabled = false; btn.innerHTML = '🔍 Look Up Device'; showToast('Lookup failed', 'error'); });
+      .catch(function(err) { btn.disabled = false; btn.innerHTML = '🔍 Look Up Device'; showToast(err.message, 'error'); });
   }
 
   function confirmAssign() {
     if (!assignState.device || !assignState.student) return;
+    var notes = document.getElementById('assign-notes').value;
     var btn = event.target; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Assigning...';
-    api('assignDevice', { serialNumber: assignState.device.serialNumber, studentEmail: assignState.student.email, notes: document.getElementById('assign-notes').value })
+    api('assignDevice', { serialNumber: assignState.device.serialNumber, studentEmail: assignState.student.email, notes: notes })
       .then(function(res) {
         btn.disabled = false; btn.innerHTML = '✅ Confirm Assignment';
         var el = document.getElementById('assign-result'); el.classList.remove('hidden');
         if (res.success) {
-          el.className = 'result-box success'; el.textContent = '✅ Assigned to ' + assignState.student.fullName;
-          showToast('Device assigned!', 'success'); setTimeout(resetAssign, 2500);
+          el.className = 'result-box success';
+          el.textContent = '✅ Assigned to ' + assignState.student.fullName;
+          showToast('Device assigned!', 'success');
+          setTimeout(resetAssign, 2500);
         } else { el.className = 'result-box error'; el.textContent = res.error; }
       })
-      .catch(function() { btn.disabled = false; btn.innerHTML = '✅ Confirm Assignment'; showToast('Failed', 'error'); });
+      .catch(function(err) { btn.disabled = false; btn.innerHTML = '✅ Confirm Assignment'; showToast(err.message, 'error'); });
   }
 
   function resetAssign() {
     assignState = { device: null, student: null };
-    ['assign-serial','assign-student-search','assign-notes'].forEach(function(id) { document.getElementById(id).value = ''; });
+    document.getElementById('assign-serial').value = '';
+    document.getElementById('assign-student-search').value = '';
+    document.getElementById('assign-notes').value = '';
     ['assign-device-result','assign-student-results','assign-selected-student','assign-result'].forEach(function(id) { document.getElementById(id).classList.add('hidden'); });
     ['assign-student-card','assign-confirm-card'].forEach(function(id) { document.getElementById(id).classList.add('hidden'); });
   }
 
-  // ── Return ───────────────────────────────────────────────
+  // ── Return Device ─────────────────────────────────────────
   function lookupReturnDevice() {
     var serial = document.getElementById('return-serial').value.trim().toUpperCase();
     if (!serial) return;
-    var btn = event.target; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Looking up...';
+    var btn = document.getElementById('return-lookup-btn');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Looking up...';
     api('lookupDevice', { serialNumber: serial })
       .then(function(res) {
         var el = document.getElementById('return-device-info');
@@ -776,27 +767,29 @@
           el.className = 'result-box error'; el.textContent = res.error; el.classList.remove('hidden');
           document.getElementById('return-confirm').classList.add('hidden'); return;
         }
-        return api('getDeviceAssignment', { serialNumber: serial }).then(function(ar) {
-          btn.disabled = false; btn.innerHTML = '🔍 Look Up Device';
-          returnState.device = res.device; returnState.assignment = ar.assignment;
-          if (!ar.assignment) {
-            el.className = 'result-box error'; el.textContent = 'No active assignment for this device.'; el.classList.remove('hidden');
-            document.getElementById('return-confirm').classList.add('hidden');
-          } else {
-            el.className = 'result-box info';
-            el.innerHTML = '<strong>' + res.device.serialNumber + '</strong><br>Assigned to <strong>' + ar.assignment.StudentEmail + '</strong><br>Since ' + new Date(ar.assignment.AssignedDate).toLocaleDateString();
-            el.classList.remove('hidden');
-            document.getElementById('return-confirm').classList.remove('hidden');
-          }
-        });
+        return api('getDeviceAssignment', { serialNumber: serial })
+          .then(function(asgnRes) {
+            btn.disabled = false; btn.innerHTML = '🔍 Look Up Device';
+            returnState.device = res.device; returnState.assignment = asgnRes.assignment;
+            if (!asgnRes.assignment) {
+              el.className = 'result-box error'; el.textContent = 'No active assignment for this device.'; el.classList.remove('hidden');
+              document.getElementById('return-confirm').classList.add('hidden');
+            } else {
+              el.className = 'result-box info';
+              el.innerHTML = '<strong>' + res.device.serialNumber + '</strong><br>Assigned to <strong>' + asgnRes.assignment.StudentEmail + '</strong><br>Since ' + new Date(asgnRes.assignment.AssignedDate).toLocaleDateString();
+              el.classList.remove('hidden');
+              document.getElementById('return-confirm').classList.remove('hidden');
+            }
+          });
       })
-      .catch(function() { btn.disabled = false; btn.innerHTML = '🔍 Look Up Device'; showToast('Lookup failed', 'error'); });
+      .catch(function(err) { btn.disabled = false; btn.innerHTML = '🔍 Look Up Device'; showToast(err.message, 'error'); });
   }
 
   function confirmReturn() {
+    var notes = document.getElementById('return-notes').value;
     var serial = document.getElementById('return-serial').value.trim().toUpperCase();
     var btn = event.target; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Processing...';
-    api('returnDevice', { serialNumber: serial, notes: document.getElementById('return-notes').value })
+    api('returnDevice', { serialNumber: serial, notes: notes })
       .then(function(res) {
         btn.disabled = false; btn.innerHTML = '✅ Confirm Return';
         var el = document.getElementById('return-result'); el.classList.remove('hidden');
@@ -805,21 +798,23 @@
           showToast('Device checked in!', 'success'); setTimeout(resetReturn, 2500);
         } else { el.className = 'result-box error'; el.textContent = res.error; }
       })
-      .catch(function() { btn.disabled = false; btn.innerHTML = '✅ Confirm Return'; showToast('Failed', 'error'); });
+      .catch(function(err) { btn.disabled = false; btn.innerHTML = '✅ Confirm Return'; showToast(err.message, 'error'); });
   }
 
   function resetReturn() {
     returnState = { device: null, assignment: null };
-    ['return-serial','return-notes'].forEach(function(id) { document.getElementById(id).value = ''; });
+    document.getElementById('return-serial').value = '';
+    document.getElementById('return-notes').value = '';
     ['return-device-info','return-result'].forEach(function(id) { document.getElementById(id).classList.add('hidden'); });
     document.getElementById('return-confirm').classList.add('hidden');
   }
 
-  // ── Damage ───────────────────────────────────────────────
+  // ── Log Damage ────────────────────────────────────────────
   function lookupDamageDevice() {
     var serial = document.getElementById('damage-serial').value.trim().toUpperCase();
     if (!serial) return;
-    var btn = event.target; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Looking up...';
+    var btn = document.getElementById('damage-lookup-btn');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Looking up...';
     api('lookupDevice', { serialNumber: serial })
       .then(function(res) {
         var el = document.getElementById('damage-device-info');
@@ -827,69 +822,73 @@
           btn.disabled = false; btn.innerHTML = '🔍 Look Up Device';
           el.className = 'result-box error'; el.textContent = res.error; el.classList.remove('hidden'); return;
         }
-        return api('getDeviceAssignment', { serialNumber: serial }).then(function(ar) {
-          btn.disabled = false; btn.innerHTML = '🔍 Look Up Device';
-          damageState.device = res.device;
-          var info = '<strong>' + res.device.serialNumber + '</strong><br>' + res.device.model;
-          if (ar.assignment) {
-            info += '<br>Assigned to <strong>' + ar.assignment.StudentEmail + '</strong>';
-            document.getElementById('damage-student').value = ar.assignment.StudentEmail;
-          } else {
-            info += '<br><em>No active assignment — enter student email below</em>';
-          }
-          el.className = 'result-box info'; el.innerHTML = info; el.classList.remove('hidden');
-          buildDamageChecklist();
-          document.getElementById('damage-form-card').classList.remove('hidden');
-        });
+        return api('getDeviceAssignment', { serialNumber: serial })
+          .then(function(asgnRes) {
+            btn.disabled = false; btn.innerHTML = '🔍 Look Up Device';
+            damageState.device = res.device;
+            var info = '<strong>' + res.device.serialNumber + '</strong><br>' + res.device.model;
+            if (asgnRes.assignment) {
+              info += '<br>Assigned to <strong>' + asgnRes.assignment.StudentEmail + '</strong>';
+              document.getElementById('damage-student').value = asgnRes.assignment.StudentEmail;
+            } else {
+              info += '<br><em>No active assignment — enter student email below</em>';
+            }
+            el.className = 'result-box info'; el.innerHTML = info; el.classList.remove('hidden');
+            buildDamageChecklist();
+            document.getElementById('damage-form-card').classList.remove('hidden');
+          });
       })
-      .catch(function() { btn.disabled = false; btn.innerHTML = '🔍 Look Up Device'; showToast('Lookup failed', 'error'); });
+      .catch(function(err) { btn.disabled = false; btn.innerHTML = '🔍 Look Up Device'; showToast(err.message, 'error'); });
   }
 
   function buildDamageChecklist() {
     checkedDamages = {};
+    var fees = appData.feeSchedule || [];
     var list = document.getElementById('damage-checklist');
     list.innerHTML = '';
-    (appData.feeSchedule || []).forEach(function(f, idx) {
+    fees.forEach(function(f, idx) {
       var item = document.createElement('div');
       item.className = 'damage-check-item';
-      item.id = 'dmg-item-' + idx;
+      item.id = 'dmg-' + idx;
       item.setAttribute('onclick', 'toggleDamage(' + idx + ')');
       item.innerHTML =
         '<div class="damage-check-box" id="dmg-box-' + idx + '"></div>' +
-        '<div class="damage-check-info"><div class="damage-check-name">' + f.DamageType + '</div>' +
-        '<div class="damage-check-fee-label" id="dmg-fee-' + idx + '">$' + parseFloat(f.Fee).toFixed(2) + '</div></div>';
+        '<div class="damage-check-info">' +
+          '<div class="damage-check-name">' + f.DamageType + '</div>' +
+          '<div class="damage-check-fee">$' + parseFloat(f.Fee).toFixed(2) + '</div>' +
+        '</div>';
       list.appendChild(item);
     });
     updateDamageTotal();
   }
 
   function toggleDamage(idx) {
-    var f = appData.feeSchedule[idx];
+    var fees = appData.feeSchedule || [];
     if (checkedDamages[idx]) {
       delete checkedDamages[idx];
-      document.getElementById('dmg-item-' + idx).classList.remove('checked');
+      document.getElementById('dmg-' + idx).classList.remove('checked');
       document.getElementById('dmg-box-' + idx).textContent = '';
     } else {
-      checkedDamages[idx] = { damageType: f.DamageType, fee: parseFloat(f.Fee) || 0, description: '' };
-      document.getElementById('dmg-item-' + idx).classList.add('checked');
+      checkedDamages[idx] = { damageType: fees[idx].DamageType, fee: parseFloat(fees[idx].Fee) || 0, description: '' };
+      document.getElementById('dmg-' + idx).classList.add('checked');
       document.getElementById('dmg-box-' + idx).textContent = '✓';
     }
     updateDamageTotal();
   }
 
   function updateDamageTotal() {
-    var total = Object.values(checkedDamages).reduce(function(s, d) { return s + d.fee; }, 0);
+    var total = Object.values(checkedDamages).reduce(function(sum, d) { return sum + (d.fee || 0); }, 0);
     document.getElementById('damage-total').textContent = '$' + total.toFixed(2);
   }
 
   function confirmLogDamages() {
     var serial = document.getElementById('damage-serial').value.trim().toUpperCase();
-    var email = document.getElementById('damage-student').value.trim();
-    if (!email) { showToast('Student email is required', 'error'); return; }
-    var items = Object.values(checkedDamages);
-    if (!items.length) { showToast('Select at least one damage type', 'error'); return; }
+    var studentEmail = document.getElementById('damage-student').value.trim();
+    if (!studentEmail) { showToast('Student email is required', 'error'); return; }
+    var damageItems = Object.values(checkedDamages);
+    if (damageItems.length === 0) { showToast('Select at least one damage type', 'error'); return; }
     var btn = event.target; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Logging...';
-    api('logDamages', { serialNumber: serial, studentEmail: email, damageItems: items })
+    api('logDamages', { serialNumber: serial, studentEmail: studentEmail, damageItems: damageItems })
       .then(function(res) {
         btn.disabled = false; btn.innerHTML = '⚠️ Log Selected Damages';
         var el = document.getElementById('damage-result'); el.classList.remove('hidden');
@@ -898,61 +897,84 @@
           showToast(res.count + ' damage(s) logged!', 'success'); setTimeout(resetDamage, 2500);
         } else { el.className = 'result-box error'; el.textContent = res.error; }
       })
-      .catch(function() { btn.disabled = false; btn.innerHTML = '⚠️ Log Selected Damages'; showToast('Failed', 'error'); });
+      .catch(function(err) { btn.disabled = false; btn.innerHTML = '⚠️ Log Selected Damages'; showToast(err.message, 'error'); });
   }
 
   function resetDamage() {
-    damageState = { device: null }; checkedDamages = {};
-    ['damage-serial','damage-student'].forEach(function(id) { document.getElementById(id).value = ''; });
+    damageState = { device: null };
+    checkedDamages = {};
+    document.getElementById('damage-serial').value = '';
+    document.getElementById('damage-student').value = '';
     document.getElementById('damage-checklist').innerHTML = '';
     document.getElementById('damage-total').textContent = '$0.00';
     ['damage-device-info','damage-result'].forEach(function(id) { document.getElementById(id).classList.add('hidden'); });
     document.getElementById('damage-form-card').classList.add('hidden');
   }
 
-  // ── Lookup ───────────────────────────────────────────────
+  // ── Device Lookup ─────────────────────────────────────────
   function lookupDeviceHistory() {
     var serial = document.getElementById('lookup-serial').value.trim().toUpperCase();
     if (!serial) return;
-    var btn = event.target; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Looking up...';
+    var btn = document.getElementById('lookup-btn');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Looking up...';
     api('getDeviceHistory', { serialNumber: serial })
       .then(function(res) {
         btn.disabled = false; btn.innerHTML = '🔎 Look Up';
-        var el = document.getElementById('lookup-result');
+        var resultEl = document.getElementById('lookup-result');
         if (!res.success) {
-          el.className = 'result-box error'; el.textContent = res.error; el.classList.remove('hidden');
+          resultEl.className = 'result-box error'; resultEl.textContent = res.error; resultEl.classList.remove('hidden');
           document.getElementById('lookup-details').classList.add('hidden'); return;
         }
-        el.classList.add('hidden');
-        var d = res.device;
-        document.getElementById('lookup-device-info').innerHTML =
-          '<div class="info-row"><span class="info-label">Serial</span><span class="info-val"><strong>' + d.serialNumber + '</strong></span></div>' +
-          '<div class="info-row"><span class="info-label">Model</span><span class="info-val">' + d.model + '</span></div>' +
-          '<div class="info-row"><span class="info-label">Org Unit</span><span class="info-val">' + d.orgUnit + '</span></div>' +
-          '<div class="info-row"><span class="info-label">Status</span><span class="info-val">' + d.status + '</span></div>' +
-          '<div class="info-row"><span class="info-label">Last Sync</span><span class="info-val">' + (d.lastSync ? new Date(d.lastSync).toLocaleDateString() : '—') + '</span></div>';
-
-        var ca = res.currentAssignment;
-        document.getElementById('lookup-current-assignment').innerHTML = ca
-          ? '<div class="result-box info" style="margin-top:0;"><div class="info-row"><span class="info-label">Student</span><span class="info-val"><strong>' + ca.StudentEmail + '</strong></span></div><div class="info-row"><span class="info-label">Since</span><span class="info-val">' + new Date(ca.AssignedDate).toLocaleDateString() + '</span></div><div class="info-row"><span class="info-label">By</span><span class="info-val">' + ca.AssignedBy + '</span></div></div>'
-          : '<p class="text-muted">No active assignment.</p>';
-
-        document.getElementById('lookup-assignment-history').innerHTML = res.assignments.length
-          ? res.assignments.map(function(a) { return '<div class="history-item"><div class="history-item-title">' + a.StudentEmail + ' <span class="badge badge-' + a.Status.toLowerCase() + '">' + a.Status + '</span></div><div class="history-item-sub">Assigned: ' + new Date(a.AssignedDate).toLocaleDateString() + (a.ReturnedDate ? ' · Returned: ' + new Date(a.ReturnedDate).toLocaleDateString() : '') + '</div></div>'; }).join('')
-          : '<p class="text-muted">No history.</p>';
-
-        document.getElementById('lookup-damage-history').innerHTML = res.damages.length
-          ? res.damages.map(function(d) { return '<div class="history-item"><div class="history-item-title">' + d.DamageType + ' — $' + parseFloat(d.Fee).toFixed(2) + ' <span class="badge badge-' + (d.BillStatus === 'Paid' ? 'paid' : d.BillStatus === 'Unpaid' ? 'unpaid' : 'unbilled') + '">' + d.BillStatus + '</span></div><div class="history-item-sub">' + new Date(d.DamageDate).toLocaleDateString() + (d.Description ? ' · ' + d.Description : '') + '</div></div>'; }).join('')
-          : '<p class="text-muted">No damage history.</p>';
-
+        resultEl.classList.add('hidden');
+        renderDeviceHistory(res);
         document.getElementById('lookup-details').classList.remove('hidden');
       })
-      .catch(function() { btn.disabled = false; btn.innerHTML = '🔎 Look Up'; showToast('Lookup failed', 'error'); });
+      .catch(function(err) { btn.disabled = false; btn.innerHTML = '🔎 Look Up'; showToast(err.message, 'error'); });
+  }
+
+  function renderDeviceHistory(res) {
+    var d = res.device;
+    document.getElementById('lookup-device-info').innerHTML =
+      '<div class="info-row"><span class="info-label">Serial</span><span class="info-val"><strong>' + d.serialNumber + '</strong></span></div>' +
+      '<div class="info-row"><span class="info-label">Model</span><span class="info-val">' + d.model + '</span></div>' +
+      '<div class="info-row"><span class="info-label">Org Unit</span><span class="info-val">' + d.orgUnit + '</span></div>' +
+      '<div class="info-row"><span class="info-label">Status</span><span class="info-val">' + d.status + '</span></div>' +
+      '<div class="info-row"><span class="info-label">Last Sync</span><span class="info-val">' + (d.lastSync ? new Date(d.lastSync).toLocaleDateString() : '—') + '</span></div>';
+
+    var ca = res.currentAssignment;
+    var caEl = document.getElementById('lookup-current-assignment');
+    if (ca) {
+      caEl.innerHTML = '<div class="result-box info" style="margin-top:0;">' +
+        '<div class="info-row"><span class="info-label">Student</span><span class="info-val"><strong>' + ca.StudentEmail + '</strong></span></div>' +
+        '<div class="info-row"><span class="info-label">Since</span><span class="info-val">' + new Date(ca.AssignedDate).toLocaleDateString() + '</span></div>' +
+        '<div class="info-row"><span class="info-label">By</span><span class="info-val">' + ca.AssignedBy + '</span></div>' + '</div>';
+    } else {
+      caEl.innerHTML = '<p class="text-muted">No active assignment.</p>';
+    }
+
+    document.getElementById('lookup-assignment-history').innerHTML = res.assignments.length
+      ? res.assignments.map(function(a) {
+          return '<div class="history-item"><div class="history-item-title">' + a.StudentEmail +
+            ' <span class="badge badge-' + a.Status.toLowerCase() + '">' + a.Status + '</span></div>' +
+            '<div class="history-item-sub">Assigned: ' + new Date(a.AssignedDate).toLocaleDateString() +
+            (a.ReturnedDate ? ' · Returned: ' + new Date(a.ReturnedDate).toLocaleDateString() : '') + '</div></div>';
+        }).join('')
+      : '<p class="text-muted">No assignment history.</p>';
+
+    document.getElementById('lookup-damage-history').innerHTML = res.damages.length
+      ? res.damages.map(function(d) {
+          return '<div class="history-item"><div class="history-item-title">' + d.DamageType +
+            ' — $' + parseFloat(d.Fee).toFixed(2) +
+            ' <span class="badge badge-' + (d.BillStatus === 'Paid' ? 'paid' : d.BillStatus === 'Unpaid' ? 'unpaid' : 'unbilled') + '">' + d.BillStatus + '</span></div>' +
+            '<div class="history-item-sub">' + new Date(d.DamageDate).toLocaleDateString() +
+            (d.Description ? ' · ' + d.Description : '') + '</div></div>';
+        }).join('')
+      : '<p class="text-muted">No damage history.</p>';
   }
 
   function resetLookup() {
     document.getElementById('lookup-serial').value = '';
-    ['lookup-result'].forEach(function(id) { document.getElementById(id).classList.add('hidden'); });
+    document.getElementById('lookup-result').classList.add('hidden');
     document.getElementById('lookup-details').classList.add('hidden');
   }
 
@@ -961,8 +983,8 @@
     var t = document.getElementById('toast');
     t.textContent = msg;
     t.className = 'show toast-' + (type || 'success');
-    clearTimeout(window._tt);
-    window._tt = setTimeout(function() { t.className = ''; }, 3000);
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(function() { t.className = ''; }, 3000);
   }
 </script>
 </body>
