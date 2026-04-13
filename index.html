@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-title" content="WCSC Devices">
   <title>WCSC Chromebook Manager</title>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@undecaf/zbar-wasm@0.10.1/dist/index.js"></script>
   <style>
     :root {
       --navy: #1a3a5c;
@@ -523,7 +523,7 @@
     img.onload = function() {
       URL.revokeObjectURL(url);
 
-      // Scale to max 1600px wide — good balance of accuracy vs speed
+      // Scale to max 1600px
       var maxW = 1600;
       var scale = img.width > maxW ? maxW / img.width : 1;
       var w = Math.round(img.width * scale);
@@ -535,19 +535,8 @@
       var ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, w, h);
 
-      // Enhance contrast for better OCR
-      var imageData = ctx.getImageData(0, 0, w, h);
-      var d = imageData.data;
-      for (var i = 0; i < d.length; i += 4) {
-        var grey = 0.299 * d[i] + 0.587 * d[i+1] + 0.114 * d[i+2];
-        // Sharpen contrast
-        var val = grey < 100 ? 0 : grey > 180 ? 255 : grey;
-        d[i] = val; d[i+1] = val; d[i+2] = val;
-      }
-      ctx.putImageData(imageData, 0, 0);
-
-      document.getElementById('decode-progress').textContent = 'Running OCR...';
-      runTesseract(canvas);
+      document.getElementById('decode-progress').textContent = 'Scanning barcode...';
+      runZBar(canvas, ctx, w, h);
     };
 
     img.onerror = function() {
@@ -559,54 +548,60 @@
     img.src = url;
   }
 
-  function runTesseract(canvas) {
-    // Crop to bottom 20% only — that's where YX07EB7D lives
-    var cropCanvas = document.createElement('canvas');
-    var startY = Math.floor(canvas.height * 0.80);
-    cropCanvas.width = canvas.width;
-    cropCanvas.height = canvas.height - startY;
-    var cropCtx = cropCanvas.getContext('2d');
-    cropCtx.drawImage(
-      canvas,
-      0, startY, canvas.width, cropCanvas.height,
-      0, 0, cropCanvas.width, cropCanvas.height
-    );
+  function runZBar(canvas, ctx, w, h) {
+    try {
+      var imageData = ctx.getImageData(0, 0, w, h);
 
-    // Scale up the crop 3x — bigger text = better OCR accuracy
-    var scaledCanvas = document.createElement('canvas');
-    scaledCanvas.width = cropCanvas.width * 3;
-    scaledCanvas.height = cropCanvas.height * 3;
-    var scaledCtx = scaledCanvas.getContext('2d');
-    scaledCtx.imageSmoothingEnabled = false;
-    scaledCtx.drawImage(cropCanvas, 0, 0, scaledCanvas.width, scaledCanvas.height);
+      zbarWasm.scanImageData(imageData)
+        .then(function(results) {
+          document.getElementById('decode-overlay').classList.remove('active');
 
-    Tesseract.recognize(scaledCanvas, 'eng', {
-      logger: function(m) {
-        if (m.status === 'recognizing text') {
-          var pct = Math.round((m.progress || 0) * 100);
-          document.getElementById('decode-progress').textContent = 'Reading text... ' + pct + '%';
-        }
-      },
-      tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
-      tessedit_pageseg_mode: '7'
-    })
-    .then(function(result) {
+          if (results && results.length > 0) {
+            // Find CODE128 result first, then any other
+            var best = results.find(function(r) { return r.typeName === 'CODE-128'; }) || results[0];
+            var value = best.decode();
+            if (value) {
+              showToast('Barcode read: ' + value, 'success');
+              handleBarcodeResult(value.toUpperCase());
+              return;
+            }
+          }
+
+          // No barcode found — try rotating the image 90 degrees and scanning again
+          var rotCanvas = document.createElement('canvas');
+          rotCanvas.width = h; rotCanvas.height = w;
+          var rotCtx = rotCanvas.getContext('2d');
+          rotCtx.translate(h / 2, w / 2);
+          rotCtx.rotate(Math.PI / 2);
+          rotCtx.drawImage(canvas, -w / 2, -h / 2);
+          var rotData = rotCtx.getImageData(0, 0, rotCanvas.width, rotCanvas.height);
+
+          return zbarWasm.scanImageData(rotData)
+            .then(function(rotResults) {
+              if (rotResults && rotResults.length > 0) {
+                var best2 = rotResults.find(function(r) { return r.typeName === 'CODE-128'; }) || rotResults[0];
+                var val2 = best2.decode();
+                if (val2) {
+                  showToast('Barcode read: ' + val2, 'success');
+                  handleBarcodeResult(val2.toUpperCase());
+                  return;
+                }
+              }
+              promptManualEntry();
+            });
+        })
+        .catch(function(err) {
+          document.getElementById('decode-overlay').classList.remove('active');
+          showToast('Scan error: ' + err.message, 'error');
+          promptManualEntry();
+        });
+    } catch(e) {
       document.getElementById('decode-overlay').classList.remove('active');
-      var text = result.data && result.data.text ? result.data.text : '';
-      parseSerialFromText(text);
-    })
-    .catch(function(err) {
-      document.getElementById('decode-overlay').classList.remove('active');
-      showToast('OCR error: ' + err.message, 'error');
+      showToast('Scan error: ' + e.message, 'error');
       promptManualEntry();
-    });
+    }
   }
 
-  function parseSerialFromText(text) {
-    if (!text || text.trim().length === 0) {
-      promptManualEntry();
-      return;
-    }
 
     // Split into tokens and lines
     var lines = text.split('\n').map(function(l) { return l.trim(); });
