@@ -520,34 +520,62 @@
     var img = new Image();
     var url = URL.createObjectURL(file);
     img.onload = function() {
-      var canvas = document.getElementById('decode-canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      var ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
       URL.revokeObjectURL(url);
 
-      // Try native BarcodeDetector first (iOS 17+ with flag enabled)
+      // Scale image down to max 1200px wide for faster processing
+      var maxW = 1200;
+      var scale = img.width > maxW ? maxW / img.width : 1;
+      var w = Math.round(img.width * scale);
+      var h = Math.round(img.height * scale);
+
+      var canvas = document.getElementById('decode-canvas');
+      canvas.width = w;
+      canvas.height = h;
+      var ctx = canvas.getContext('2d');
+
+      // Draw scaled image
+      ctx.drawImage(img, 0, 0, w, h);
+
+      // Boost contrast to help barcode detection
+      var imageData = ctx.getImageData(0, 0, w, h);
+      var data = imageData.data;
+      for (var i = 0; i < data.length; i += 4) {
+        // Convert to greyscale
+        var grey = 0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2];
+        // Apply threshold to make it high contrast black/white
+        var val = grey > 128 ? 255 : 0;
+        data[i] = val; data[i+1] = val; data[i+2] = val;
+      }
+      ctx.putImageData(imageData, 0, 0);
+
       if ('BarcodeDetector' in window) {
-        var detector = new BarcodeDetector();
+        var detector = new BarcodeDetector({ formats: ['code_128', 'code_39', 'qr_code', 'ean_13', 'ean_8', 'upc_a', 'upc_e', 'pdf417', 'aztec', 'data_matrix'] });
         detector.detect(canvas)
           .then(function(barcodes) {
             document.getElementById('decode-overlay').classList.remove('active');
             if (barcodes && barcodes.length > 0) {
               handleBarcodeResult(barcodes[0].rawValue);
             } else {
-              showToast('No barcode found — try again with better lighting', 'error');
+              // Try once more on original image without threshold
+              ctx.drawImage(img, 0, 0, w, h);
+              detector.detect(canvas)
+                .then(function(barcodes2) {
+                  if (barcodes2 && barcodes2.length > 0) {
+                    handleBarcodeResult(barcodes2[0].rawValue);
+                  } else {
+                    promptManualEntry();
+                  }
+                })
+                .catch(function() { promptManualEntry(); });
             }
           })
-          .catch(function() {
+          .catch(function(err) {
             document.getElementById('decode-overlay').classList.remove('active');
-            showToast('Could not read barcode — try again', 'error');
+            promptManualEntry();
           });
       } else {
-        // Fallback: prompt manual entry
         document.getElementById('decode-overlay').classList.remove('active');
-        var manual = prompt('Could not auto-read barcode. Enter serial number manually:');
-        if (manual) handleBarcodeResult(manual.trim().toUpperCase());
+        promptManualEntry();
       }
     };
     img.onerror = function() {
@@ -558,6 +586,12 @@
     img.src = url;
   }
 
+  function promptManualEntry() {
+    var manual = prompt('Could not read barcode automatically.\nEnter serial number manually:');
+    if (manual && manual.trim()) {
+      handleBarcodeResult(manual.trim().toUpperCase());
+    }
+  }
   function handleBarcodeResult(value) {
     if (!value || !cameraTargetInput) return;
     var input = document.getElementById(cameraTargetInput);
