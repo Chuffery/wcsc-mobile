@@ -626,7 +626,7 @@
   function signIn() {
     var client = google.accounts.oauth2.initTokenClient({
       client_id: GOOGLE_CLIENT_ID,
-      scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
+      scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/cloud-vision',
       callback: function(response) {
         if (response.error) { showLoginError('Sign in failed: ' + response.error); return; }
         accessToken = response.access_token;
