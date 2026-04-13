@@ -560,8 +560,16 @@
   }
 
   function runTesseract(canvas) {
-    // Tesseract v5 API
-    Tesseract.recognize(canvas, 'eng', {
+    // Crop to bottom 40% of image where serial text lives
+    // This avoids Tesseract trying to read the barcode bars as letters
+    var cropCanvas = document.createElement('canvas');
+    var startY = Math.floor(canvas.height * 0.55);
+    cropCanvas.width = canvas.width;
+    cropCanvas.height = canvas.height - startY;
+    var cropCtx = cropCanvas.getContext('2d');
+    cropCtx.drawImage(canvas, 0, startY, canvas.width, cropCanvas.height, 0, 0, canvas.width, cropCanvas.height);
+
+    Tesseract.recognize(cropCanvas, 'eng', {
       logger: function(m) {
         if (m.status === 'recognizing text') {
           var pct = Math.round((m.progress || 0) * 100);
