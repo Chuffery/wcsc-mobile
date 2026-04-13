@@ -551,7 +551,7 @@
   function startZXing(video) {
     if (!cameraActive) return;
     try {
-      var codeReader = new ZXing.BrowserMultiFormatReader();
+      var codeReader = new ZXingLibrary.BrowserMultiFormatReader();
       codeReader.decodeFromVideoElement(video)
         .then(function(result) {
           if (result && cameraActive) {
