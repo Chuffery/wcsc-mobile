@@ -543,6 +543,10 @@
         document.getElementById('decode-overlay').classList.remove('active');
 
         var response = data.responses && data.responses[0];
+        // TEMP DEBUG
+        var debugText = response ? JSON.stringify(Object.keys(response)) : 'no response';
+        showToast('Vision keys: ' + debugText, 'error');
+        console.log('Vision full response:', JSON.stringify(data));
         if (!response) { promptManualEntry(); return; }
 
         // Try barcode detection first
