@@ -560,22 +560,35 @@
   }
 
   function runTesseract(canvas) {
-    // Crop to bottom 40% of image where serial text lives
-    // This avoids Tesseract trying to read the barcode bars as letters
+    // Crop to bottom 20% only — that's where YX07EB7D lives
     var cropCanvas = document.createElement('canvas');
-    var startY = Math.floor(canvas.height * 0.55);
+    var startY = Math.floor(canvas.height * 0.80);
     cropCanvas.width = canvas.width;
     cropCanvas.height = canvas.height - startY;
     var cropCtx = cropCanvas.getContext('2d');
-    cropCtx.drawImage(canvas, 0, startY, canvas.width, cropCanvas.height, 0, 0, canvas.width, cropCanvas.height);
+    cropCtx.drawImage(
+      canvas,
+      0, startY, canvas.width, cropCanvas.height,
+      0, 0, cropCanvas.width, cropCanvas.height
+    );
 
-    Tesseract.recognize(cropCanvas, 'eng', {
+    // Scale up the crop 3x — bigger text = better OCR accuracy
+    var scaledCanvas = document.createElement('canvas');
+    scaledCanvas.width = cropCanvas.width * 3;
+    scaledCanvas.height = cropCanvas.height * 3;
+    var scaledCtx = scaledCanvas.getContext('2d');
+    scaledCtx.imageSmoothingEnabled = false;
+    scaledCtx.drawImage(cropCanvas, 0, 0, scaledCanvas.width, scaledCanvas.height);
+
+    Tesseract.recognize(scaledCanvas, 'eng', {
       logger: function(m) {
         if (m.status === 'recognizing text') {
           var pct = Math.round((m.progress || 0) * 100);
           document.getElementById('decode-progress').textContent = 'Reading text... ' + pct + '%';
         }
-      }
+      },
+      tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+      tessedit_pageseg_mode: '7'
     })
     .then(function(result) {
       document.getElementById('decode-overlay').classList.remove('active');
