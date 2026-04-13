@@ -519,76 +519,23 @@
 
     var reader = new FileReader();
     reader.onload = function(e) {
-      // Strip the data:image/jpeg;base64, prefix
       var base64 = e.target.result.split(',')[1];
-
-      fetch('https://vision.googleapis.com/v1/images:annotate', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + accessToken,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          requests: [{
-            image: { content: base64 },
-            features: [
-              { type: 'TEXT_DETECTION', maxResults: 10 },
-              { type: 'BARCODE_DETECTION', maxResults: 5 }
-            ]
-          }]
-        })
-      })
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        document.getElementById('decode-overlay').classList.remove('active');
-
-        var response = data.responses && data.responses[0];
-        // TEMP DEBUG
-        var debugText = response ? JSON.stringify(Object.keys(response)) : 'no response';
-        showToast('Vision keys: ' + debugText, 'error');
-        console.log('Vision full response:', JSON.stringify(data));
-        if (!response) { promptManualEntry(); return; }
-
-        // Try barcode detection first
-        if (response.barcodeAnnotations && response.barcodeAnnotations.length > 0) {
-          handleBarcodeResult(response.barcodeAnnotations[0].rawValue);
-          return;
-        }
-
-        // Fall back to OCR text — find the serial number pattern
-        if (response.textAnnotations && response.textAnnotations.length > 0) {
-          var fullText = response.textAnnotations[0].description || '';
-          // Look for serial number pattern — alphanumeric 6-12 chars on its own line
-          var lines = fullText.split('\n').map(function(l) { return l.trim(); });
-          var serial = null;
-
-          // First pass — look for a line that matches serial pattern (letters+numbers, 6-12 chars)
-          for (var i = 0; i < lines.length; i++) {
-            var line = lines[i].toUpperCase().replace(/\s/g, '');
-            if (/^[A-Z0-9]{6,12}$/.test(line) && !/^(WARRICK|COUNTY|SCHOOL|CORP|FOUND|PLEASE|RETURN|ANY)/.test(line)) {
-              serial = line;
-              break;
-            }
-          }
-
-          if (serial) {
-            handleBarcodeResult(serial);
+      api('decodeBarcode', { base64: base64 })
+        .then(function(res) {
+          document.getElementById('decode-overlay').classList.remove('active');
+          if (res.success) {
+            showToast('Read via ' + res.method + ': ' + res.value, 'success');
+            handleBarcodeResult(res.value);
           } else {
-            // Show full OCR text so tech can confirm
-            var clean = fullText.replace(/\n/g, ' ').trim();
-            var manual = prompt('OCR found: "' + clean + '"\n\nEnter or confirm the serial number:');
-            if (manual && manual.trim()) handleBarcodeResult(manual.trim().toUpperCase());
+            showToast(res.error || 'Could not read barcode', 'error');
+            promptManualEntry();
           }
-          return;
-        }
-
-        promptManualEntry();
-      })
-      .catch(function(err) {
-        document.getElementById('decode-overlay').classList.remove('active');
-        showToast('Vision API error: ' + err.message, 'error');
-        promptManualEntry();
-      });
+        })
+        .catch(function(err) {
+          document.getElementById('decode-overlay').classList.remove('active');
+          showToast('Error: ' + err.message, 'error');
+          promptManualEntry();
+        });
     };
     reader.onerror = function() {
       document.getElementById('decode-overlay').classList.remove('active');
