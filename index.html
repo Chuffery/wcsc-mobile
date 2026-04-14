@@ -31,11 +31,10 @@
     html, body {
       width: 100%; height: 100%; overflow-x: hidden;
       font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
-      background: var(--bg); color: var(--text); font-size: 16px;
-      -webkit-text-size-adjust: 100%;
+      background: var(--bg); color: var(--text); font-size: 16px; -webkit-text-size-adjust: 100%;
     }
 
-    /* ── Login ── */
+    /* Login */
     #login-screen {
       position: fixed; inset: 0; background: var(--navy);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -44,7 +43,7 @@
     #login-screen.hidden { display: none; }
     .login-logo { font-size: 48px; margin-bottom: 16px; }
     .login-district { font-size: 12px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
-    .login-title { font-size: 24px; font-weight: 700; color: var(--gold-light); margin-bottom: 8px; text-align: center; }
+    .login-title { font-size: 22px; font-weight: 700; color: var(--gold-light); margin-bottom: 8px; text-align: center; }
     .login-sub { font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 40px; text-align: center; }
     .login-btn {
       background: white; color: var(--navy); border: none;
@@ -56,11 +55,11 @@
     .login-btn:active { transform: scale(0.98); }
     .login-error { color: #ff6b6b; font-size: 13px; margin-top: 16px; text-align: center; max-width: 280px; }
 
-    /* ── App Shell ── */
+    /* App */
     #app { display: none; flex-direction: column; height: 100vh; }
     #app.visible { display: flex; }
 
-    /* ── Header ── */
+    /* Header */
     .header {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       height: var(--header-height); background: var(--navy);
@@ -68,18 +67,18 @@
       padding: 0 16px; padding-top: env(safe-area-inset-top);
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
-    .header-title { font-size: 16px; font-weight: 700; color: var(--gold-light); }
+    .header-title { font-size: 15px; font-weight: 700; color: var(--gold-light); }
     .header-user { font-size: 11px; color: rgba(255,255,255,0.5); max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .header-signout { font-size: 12px; color: rgba(255,255,255,0.4); cursor: pointer; padding: 4px 8px; }
     .header-signout:active { color: white; }
 
-    /* ── Content ── */
+    /* Content */
     .content {
       flex: 1; margin-top: var(--header-height); margin-bottom: var(--nav-height);
       overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px;
     }
 
-    /* ── Bottom Nav ── */
+    /* Bottom Nav */
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
       height: var(--nav-height); background: var(--navy);
@@ -96,27 +95,11 @@
     .nav-item:active { opacity: 0.7; }
     .nav-icon { font-size: 22px; line-height: 1; }
 
-    /* ── Pages ── */
-    .page { display: none; }
-    .page.active { display: block; }
-    .page-title { font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
-    .page-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
-
-    /* ── Cards ── */
+    /* Cards */
     .card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; margin-bottom: 16px; }
-    .card-title { font-size: 12px; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; }
+    .card-title { font-size: 11px; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; }
 
-    /* ── Search tabs ── */
-    .search-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
-    .search-tab {
-      flex: 1; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 700;
-      border: 1.5px solid var(--border); background: white; cursor: pointer; color: var(--text-muted);
-      text-align: center; -webkit-appearance: none;
-    }
-    .search-tab.active { background: var(--navy); color: white; border-color: var(--navy); }
-    .search-tab:active { opacity: 0.8; }
-
-    /* ── Form ── */
+    /* Form */
     .form-group { margin-bottom: 14px; }
     .form-group label { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
     .form-group input, .form-group textarea {
@@ -125,128 +108,93 @@
     }
     .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--navy); }
     .form-group textarea { resize: none; min-height: 70px; font-family: inherit; }
-    .serial-input { font-family: 'SF Mono', Monaco, monospace !important; letter-spacing: 2px !important; font-size: 20px !important; padding: 16px 14px !important; }
     .search-hint { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
 
-    /* ── Searching indicator ── */
-    .searching-row {
-      display: flex; align-items: center; gap: 10px;
-      padding: 12px 0; font-size: 14px; color: var(--text-muted);
+    /* Search tabs */
+    .search-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+    .search-tab {
+      flex: 1; padding: 9px; border-radius: 8px; font-size: 13px; font-weight: 700;
+      border: 1.5px solid var(--border); background: white; cursor: pointer; color: var(--text-muted); text-align: center;
     }
+    .search-tab.active { background: var(--navy); color: white; border-color: var(--navy); }
 
-    /* ── Result list buttons ── */
+    /* Device card */
+    .device-card { background: var(--navy); color: white; border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
+    .device-serial { font-family: 'SF Mono', Monaco, monospace; font-size: 22px; font-weight: 700; letter-spacing: 2px; color: var(--gold-light); margin-bottom: 4px; }
+    .device-model { font-size: 13px; opacity: 0.75; margin-bottom: 12px; }
+    .device-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .device-field-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.5; margin-bottom: 2px; }
+    .device-field-value { font-size: 12px; opacity: 0.9; word-break: break-all; }
+
+    /* Status banner */
+    .status-banner { border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; }
+    .status-banner.assigned { background: #eafaf1; border: 1.5px solid #a9dfbf; }
+    .status-banner.unassigned { background: #fdf2f2; border: 1.5px solid #f5b7b1; }
+    .status-banner.suggest { background: #fff8e1; border: 1.5px solid #f9d07a; }
+    .status-banner-title { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+    .status-banner.assigned .status-banner-title { color: var(--success); }
+    .status-banner.unassigned .status-banner-title { color: var(--error); }
+    .status-banner.suggest .status-banner-title { color: var(--warning); }
+    .status-banner-sub { font-size: 12px; color: var(--text-muted); }
+
+    /* Inline panel */
+    .inline-panel { background: #f8fafc; border: 1.5px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+    .inline-panel.warn { border-color: #f9d07a; background: #fffdf0; }
+    .inline-panel-title { font-size: 11px; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+
+    /* Search results */
     .result-btn {
-      display: block; width: 100%; text-align: left; padding: 14px 16px;
-      background: white; border: 1.5px solid var(--border); border-radius: 10px;
-      margin-bottom: 8px; cursor: pointer; color: var(--text); -webkit-appearance: none;
-    }
-    .result-btn:active { background: #eaf1fb; border-color: var(--navy); }
-    .result-btn-primary { font-weight: 700; display: block; font-size: 15px; font-family: 'SF Mono', Monaco, monospace; letter-spacing: 1px; }
-    .result-btn-sub { font-size: 12px; color: var(--text-muted); display: block; margin-top: 3px; font-family: inherit; letter-spacing: 0; }
-
-    /* ── Device Card ── */
-    .device-card {
-      background: var(--navy); color: white; border-radius: var(--radius);
-      padding: 16px; margin-bottom: 16px;
-    }
-    .device-card-serial { font-family: 'SF Mono', Monaco, monospace; font-size: 22px; font-weight: 700; letter-spacing: 2px; color: var(--gold-light); margin-bottom: 4px; }
-    .device-card-model { font-size: 14px; opacity: 0.8; margin-bottom: 12px; }
-    .device-card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .device-card-field { }
-    .device-card-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.5; margin-bottom: 2px; }
-    .device-card-value { font-size: 13px; opacity: 0.9; word-break: break-all; }
-    .device-card-value.mono { font-family: 'SF Mono', Monaco, monospace; letter-spacing: 0.5px; }
-
-    /* ── Status Banner ── */
-    .status-banner {
-      border-radius: 10px; padding: 14px 16px; margin-bottom: 16px;
-      font-size: 14px; font-weight: 600;
-    }
-    .status-banner.assigned { background: #eafaf1; border: 1.5px solid #a9dfbf; color: var(--success); }
-    .status-banner.unassigned { background: #fdf2f2; border: 1.5px solid #f5b7b1; color: var(--error); }
-    .status-banner.suggest { background: #fff8e1; border: 1.5px solid #f9d07a; color: var(--warning); }
-    .status-banner-sub { font-size: 13px; font-weight: 400; margin-top: 4px; opacity: 0.85; }
-
-    /* ── Action Buttons ── */
-    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-    .action-btn {
-      padding: 14px 12px; border-radius: 10px; font-size: 14px; font-weight: 700;
-      border: none; cursor: pointer; text-align: center; -webkit-appearance: none;
-    }
-    .action-btn:active { opacity: 0.8; }
-    .action-btn.primary { background: var(--navy); color: white; }
-    .action-btn.danger { background: var(--error); color: white; }
-    .action-btn.warning { background: var(--warning); color: white; }
-    .action-btn.success { background: var(--success); color: white; }
-    .action-btn.outline { background: white; border: 1.5px solid var(--border); color: var(--text); }
-    .action-btn-icon { font-size: 20px; display: block; margin-bottom: 4px; }
-    .action-btn-full { grid-column: 1 / -1; }
-
-    /* ── Inline forms (expanded panels) ── */
-    .inline-panel {
-      background: #f8fafc; border: 1.5px solid var(--border); border-radius: 10px;
-      padding: 16px; margin-bottom: 16px;
-    }
-    .inline-panel-title { font-size: 13px; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; }
-
-    /* ── Damage checklist ── */
-    .damage-check-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 14px; background: white;
-      border: 1.5px solid var(--border); border-radius: 10px; margin-bottom: 8px; cursor: pointer;
-    }
-    .damage-check-item.checked { border-color: var(--navy); background: #eaf1fb; }
-    .damage-check-item:active { opacity: 0.8; }
-    .damage-check-box {
-      width: 24px; height: 24px; border: 2px solid var(--border); border-radius: 6px;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px;
-    }
-    .damage-check-item.checked .damage-check-box { background: var(--navy); border-color: var(--navy); color: white; }
-    .damage-check-info { flex: 1; }
-    .damage-check-name { font-size: 14px; font-weight: 600; }
-    .damage-check-fee { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
-    .damage-check-item.checked .damage-check-fee { color: var(--navy); font-weight: 600; }
-    .total-bar {
-      background: var(--navy); color: white; border-radius: 10px;
-      padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;
-    }
-    .total-bar-label { font-size: 13px; opacity: 0.8; }
-    .total-bar-amount { font-size: 24px; font-weight: 800; }
-
-    /* ── Damage history ── */
-    .damage-history-item { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
-    .damage-history-item:last-child { border-bottom: none; }
-    .damage-history-title { font-weight: 600; }
-    .damage-history-sub { color: var(--text-muted); margin-top: 2px; font-size: 12px; }
-
-    /* ── Student search results ── */
-    .student-result-btn {
       display: block; width: 100%; text-align: left; padding: 12px 14px;
       background: white; border: 1.5px solid var(--border); border-radius: 10px;
       margin-bottom: 8px; cursor: pointer; color: var(--text); -webkit-appearance: none;
     }
-    .student-result-btn:active { background: #eaf1fb; border-color: var(--navy); }
-    .student-result-name { font-weight: 700; display: block; font-size: 14px; }
-    .student-result-sub { font-size: 12px; color: var(--text-muted); display: block; margin-top: 2px; }
+    .result-btn:active { background: #eaf1fb; border-color: var(--navy); }
+    .result-btn-serial { font-family: 'SF Mono', Monaco, monospace; font-weight: 700; font-size: 15px; letter-spacing: 1px; display: block; }
+    .result-btn-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; display: block; font-family: inherit; letter-spacing: 0; }
 
-    /* ── Info panel ── */
-    .info-panel { background: #f0f4f8; border-radius: 10px; padding: 12px 14px; border-left: 4px solid var(--navy); margin-bottom: 14px; }
-    .info-row { display: flex; gap: 8px; margin-bottom: 4px; font-size: 13px; }
-    .info-label { font-weight: 600; color: var(--text-muted); min-width: 90px; font-size: 12px; }
-    .info-val { color: var(--text); flex: 1; word-break: break-all; }
+    /* Student results */
+    .student-btn {
+      display: block; width: 100%; text-align: left; padding: 12px 14px;
+      background: white; border: 1.5px solid var(--border); border-radius: 10px;
+      margin-bottom: 8px; cursor: pointer; color: var(--text); -webkit-appearance: none;
+    }
+    .student-btn:active { background: #eaf1fb; border-color: var(--navy); }
+    .student-btn-name { font-weight: 700; font-size: 15px; display: block; }
+    .student-btn-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; display: block; }
 
-    /* ── Badges ── */
-    .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+    /* Damage checklist */
+    .damage-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px; background: white; border: 1.5px solid var(--border); border-radius: 10px; margin-bottom: 8px; cursor: pointer;
+    }
+    .damage-item.checked { border-color: var(--navy); background: #eaf1fb; }
+    .damage-item:active { opacity: 0.8; }
+    .damage-check-box { width: 24px; height: 24px; border: 2px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; }
+    .damage-item.checked .damage-check-box { background: var(--navy); border-color: var(--navy); color: white; }
+    .damage-item-name { font-size: 14px; font-weight: 600; flex: 1; }
+    .damage-item-fee { font-size: 12px; color: var(--text-muted); }
+    .damage-item.checked .damage-item-fee { color: var(--navy); font-weight: 600; }
+    .total-bar { background: var(--navy); color: white; border-radius: 10px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .total-bar-label { font-size: 13px; opacity: 0.8; }
+    .total-bar-amount { font-size: 24px; font-weight: 800; }
+
+    /* History */
+    .history-item { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .history-item:last-child { border-bottom: none; }
+    .history-item-title { font-weight: 600; margin-bottom: 2px; }
+    .history-item-sub { font-size: 12px; color: var(--text-muted); }
+
+    /* Badges */
+    .badge { display: inline-block; padding: 2px 7px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
     .badge-active { background: #eafaf1; color: var(--success); }
     .badge-returned { background: #eaf1fb; color: #1a5276; }
     .badge-unpaid { background: #fdf2f2; color: var(--error); }
     .badge-paid { background: #eafaf1; color: var(--success); }
     .badge-unbilled { background: #fff8e1; color: var(--warning); }
 
-    /* ── Buttons ── */
+    /* Buttons */
     .btn {
-      width: 100%; padding: 14px; border-radius: 10px;
-      font-size: 15px; font-weight: 700; border: none;
+      width: 100%; padding: 14px; border-radius: 10px; font-size: 15px; font-weight: 700; border: none;
       cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
       margin-bottom: 10px; -webkit-appearance: none;
     }
@@ -258,18 +206,21 @@
     .btn-warning { background: var(--warning); color: white; }
     .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
 
-    /* ── Result / message boxes ── */
-    .result-box { border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; font-size: 14px; line-height: 1.5; }
+    /* Result boxes */
+    .result-box { border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; font-size: 14px; line-height: 1.5; }
     .result-box.success { background: #eafaf1; border: 1px solid #a9dfbf; color: var(--success); }
     .result-box.error { background: #fdf2f2; border: 1px solid #f5b7b1; color: var(--error); }
     .result-box.info { background: #eaf1fb; border: 1px solid #aed6f1; color: #1a5276; }
 
-    /* ── Spinner ── */
+    /* Searching indicator */
+    .searching-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; font-size: 13px; color: var(--text-muted); }
+
+    /* Spinner */
     .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; }
-    .spinner-dark { border: 2px solid rgba(26,58,92,0.15); border-top-color: var(--navy); }
+    .spinner-dark { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(26,58,92,0.15); border-top-color: var(--navy); border-radius: 50%; animation: spin 0.6s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── Toast ── */
+    /* Toast */
     #toast {
       position: fixed; bottom: calc(var(--nav-height) + 16px); left: 16px; right: 16px;
       background: var(--navy); color: white; padding: 14px 18px; border-radius: 10px;
@@ -281,7 +232,7 @@
     #toast.toast-error { border-left: 4px solid var(--error); }
     #toast.toast-warning { border-left: 4px solid var(--warning); }
 
-    /* ── Loading ── */
+    /* Loading */
     #loading-overlay {
       position: fixed; inset: 0; background: var(--navy);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -292,9 +243,8 @@
 
     .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
     .hidden { display: none !important; }
-    .mt-12 { margin-top: 12px; }
+    .mt-10 { margin-top: 10px; }
     .text-muted { color: var(--text-muted); font-size: 13px; padding: 6px 0; }
-    .section-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
   </style>
 </head>
 <body>
@@ -308,7 +258,7 @@
   <div class="login-logo">📱</div>
   <div class="login-district">Warrick County School Corporation</div>
   <div class="login-title">Chromebook Manager</div>
-  <div class="login-sub">Sign in with your WCSC Google account to continue</div>
+  <div class="login-sub">Sign in with your WCSC Google account</div>
   <button class="login-btn" onclick="signIn()">
     <svg width="20" height="20" viewBox="0 0 24 24">
       <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -332,114 +282,109 @@
 
   <div class="content">
 
-    <!-- ══ LOOKUP PAGE (home) ══ -->
+    <!-- LOOKUP PAGE -->
     <div class="page active" id="page-lookup">
-      <div class="page-title">Device Lookup</div>
-      <div class="page-sub">Search by serial number or student name</div>
-
-      <!-- Search input -->
       <div class="card">
         <div class="search-tabs">
-          <button class="search-tab active" id="tab-serial" onclick="switchSearchTab('serial')">📟 Serial</button>
-          <button class="search-tab" id="tab-user" onclick="switchSearchTab('user')">👤 Student</button>
+          <button class="search-tab active" id="tab-serial" onclick="switchTab('serial')">📟 Serial</button>
+          <button class="search-tab" id="tab-user" onclick="switchTab('user')">👤 Student</button>
         </div>
 
         <!-- Serial search -->
-        <div id="search-serial-section">
+        <div id="section-serial">
           <div class="form-group" style="margin-bottom:6px;">
-            <input type="text" id="search-serial-input"
+            <label>Serial Number</label>
+            <input type="text" id="serial-input"
               placeholder="Type 4+ characters..."
               autocomplete="off" autocorrect="off"
               autocapitalize="characters" spellcheck="false"
-              inputmode="text" class="serial-input">
+              style="font-family:'SF Mono',Monaco,monospace;letter-spacing:1px;font-size:20px;padding:16px 14px;">
           </div>
-          <div class="search-hint">Type partial serial — auto-searches as you type</div>
+          <div class="search-hint">Auto-searches as you type • Partial match OK</div>
         </div>
 
         <!-- User search -->
-        <div id="search-user-section" class="hidden">
+        <div id="section-user" class="hidden">
           <div class="form-group" style="margin-bottom:6px;">
-            <input type="text" id="search-user-input"
-              placeholder="Student name or email..."
-              autocomplete="off" autocorrect="off" autocapitalize="words">
+            <input type="text" id="user-input" placeholder="Student name or email...">
           </div>
-          <div class="search-hint">Shows all matching students and their assigned devices</div>
-          <button class="btn btn-primary" style="margin-top:10px;margin-bottom:0;" onclick="doUserSearch()">🔍 Search</button>
+          <button class="btn btn-primary" style="margin-bottom:0;" onclick="doUserSearch()">🔍 Search</button>
         </div>
 
         <!-- Searching indicator -->
-        <div id="search-searching" class="hidden">
-          <div class="searching-row">
-            <div class="spinner spinner-dark"></div>
-            Searching...
-          </div>
+        <div id="searching-indicator" class="hidden">
+          <div class="searching-row"><div class="spinner-dark"></div> Searching...</div>
         </div>
 
-        <!-- Search results list -->
-        <div id="search-results" class="hidden mt-12"></div>
+        <!-- Results list -->
+        <div id="search-results" class="mt-10"></div>
       </div>
 
-      <!-- Device detail (shown after selection) -->
+      <!-- Device detail -->
       <div id="device-detail" class="hidden">
 
         <!-- Device card -->
-        <div class="device-card" id="device-card"></div>
+        <div class="device-card" id="device-card-el"></div>
 
-        <!-- Status banner + context actions -->
-        <div id="device-status-banner"></div>
-        <div id="device-actions"></div>
+        <!-- Status + actions -->
+        <div id="status-banner-el"></div>
+        <div id="action-buttons"></div>
 
-        <!-- Inline panels (shown when action tapped) -->
+        <!-- Auto-assign panel -->
+        <div id="panel-autoassign" class="hidden">
+          <div class="inline-panel warn">
+            <div class="inline-panel-title" style="color:var(--warning);">⚠ Confirm Auto-Assignment</div>
+            <div id="autoassign-info" style="font-size:14px;line-height:1.6;margin-bottom:12px;color:var(--text-muted);"></div>
+            <div class="form-group">
+              <label>Notes (optional)</label>
+              <textarea id="autoassign-notes" placeholder="Any notes..."></textarea>
+            </div>
+            <button class="btn btn-warning" onclick="confirmAutoAssign()">✅ Confirm Assignment</button>
+            <button class="btn btn-outline" onclick="hidePanel('panel-autoassign'); showPanel('panel-assign')">Assign Different Student</button>
+            <button class="btn btn-outline" onclick="hidePanel('panel-autoassign')">✕ Cancel</button>
+            <div id="autoassign-result" class="hidden mt-10"></div>
+          </div>
+        </div>
+
+        <!-- Manual assign panel -->
         <div id="panel-assign" class="hidden">
           <div class="inline-panel">
             <div class="inline-panel-title">Assign Device</div>
             <div class="form-group">
               <label>Search Student</label>
-              <input type="text" id="assign-student-search" placeholder="Student name...">
+              <input type="text" id="assign-student-input" placeholder="Student name...">
             </div>
-            <button class="btn btn-primary" style="margin-bottom:8px;" onclick="searchStudentsForAssign()">🔍 Search</button>
-            <div id="assign-student-results" class="hidden"></div>
-            <div id="assign-selected-student" class="hidden"></div>
+            <button class="btn btn-primary" style="margin-bottom:10px;" onclick="searchStudentsForAssign()">🔍 Search</button>
+            <div id="assign-student-results" class="hidden mt-10"></div>
+            <div id="assign-selected" class="hidden"></div>
             <div id="assign-confirm-section" class="hidden">
               <div class="form-group">
                 <label>Notes (optional)</label>
                 <textarea id="assign-notes" placeholder="Any notes..."></textarea>
               </div>
               <button class="btn btn-success" onclick="confirmAssign()">✅ Confirm Assignment</button>
-              <button class="btn btn-outline" onclick="cancelPanel('panel-assign')">✕ Cancel</button>
+              <button class="btn btn-outline" onclick="hidePanel('panel-assign')">✕ Cancel</button>
             </div>
-            <div id="assign-result" class="hidden"></div>
+            <div id="assign-result" class="hidden mt-10"></div>
           </div>
         </div>
 
-        <div id="panel-autoassign" class="hidden">
-          <div class="inline-panel" style="border-left:4px solid var(--warning);">
-            <div class="inline-panel-title" style="color:var(--warning);">⚠️ Confirm Auto-Assignment</div>
-            <div id="autoassign-info" style="font-size:14px;margin-bottom:14px;line-height:1.6;"></div>
-            <div class="form-group">
-              <label>Notes (optional)</label>
-              <textarea id="autoassign-notes" placeholder="Any notes..."></textarea>
-            </div>
-            <button class="btn btn-warning" onclick="confirmAutoAssign()">✅ Confirm Assignment</button>
-            <button class="btn btn-outline" onclick="cancelPanel('panel-autoassign')">✕ Cancel — Assign Someone Else</button>
-            <div id="autoassign-result" class="hidden"></div>
-          </div>
-        </div>
-
+        <!-- Return panel -->
         <div id="panel-return" class="hidden">
           <div class="inline-panel">
             <div class="inline-panel-title">Return Device</div>
-            <div id="return-assignment-info" style="font-size:14px;margin-bottom:14px;"></div>
+            <div id="return-info" style="font-size:13px;color:var(--text-muted);margin-bottom:12px;"></div>
             <div class="form-group">
               <label>Return Notes (optional)</label>
               <textarea id="return-notes" placeholder="Condition notes..."></textarea>
             </div>
             <button class="btn btn-success" onclick="confirmReturn()">✅ Confirm Return</button>
-            <button class="btn btn-outline" onclick="cancelPanel('panel-return')">✕ Cancel</button>
-            <div id="return-result" class="hidden"></div>
+            <button class="btn btn-outline" onclick="hidePanel('panel-return')">✕ Cancel</button>
+            <div id="return-result" class="hidden mt-10"></div>
           </div>
         </div>
 
+        <!-- Damage panel -->
         <div id="panel-damage" class="hidden">
           <div class="inline-panel">
             <div class="inline-panel-title">Log Damage</div>
@@ -453,30 +398,28 @@
               <span class="total-bar-amount" id="damage-total">$0.00</span>
             </div>
             <button class="btn btn-danger" onclick="confirmLogDamages()">⚠️ Log Selected Damages</button>
-            <button class="btn btn-outline" onclick="cancelPanel('panel-damage')">✕ Cancel</button>
-            <div id="damage-result" class="hidden"></div>
+            <button class="btn btn-outline" onclick="hidePanel('panel-damage')">✕ Cancel</button>
+            <div id="damage-result" class="hidden mt-10"></div>
           </div>
         </div>
 
         <!-- Damage history -->
-        <div id="damage-history-section" class="hidden">
+        <div id="damage-history-card" class="hidden">
           <div class="card">
             <div class="card-title">Damage History</div>
             <div id="damage-history-list"></div>
           </div>
         </div>
 
-        <!-- Reset button -->
         <button class="btn btn-outline" onclick="resetLookup()" style="margin-top:4px;">🔍 Search Another Device</button>
       </div>
     </div>
 
-    <!-- ══ HISTORY PAGE ══ -->
-    <div class="page" id="page-history">
-      <div class="page-title">Recent Activity</div>
-      <div class="page-sub">Last 20 assignments in this session</div>
+    <!-- HISTORY PAGE -->
+    <div class="page hidden" id="page-history">
       <div class="card">
-        <div id="history-list"><p class="text-muted">No activity yet this session.</p></div>
+        <div class="card-title">Session Activity</div>
+        <div id="history-list"><p class="text-muted">No activity yet.</p></div>
       </div>
     </div>
 
@@ -496,30 +439,23 @@
 
 <script>
   var GOOGLE_CLIENT_ID = '459632940971-tqevq3kpec9lu12afsfiochd2k3hqjn9.apps.googleusercontent.com';
-  var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRlhViqGwTs-rwB1_JcEsI8twL8Rd2djf_bkc5iH_vHLAp5ui9xMjBkXzAeuaPhL3K/exec'; // ← PASTE YOUR APPS SCRIPT WEB APP URL HERE
+  var APPS_SCRIPT_URL = ''; // ← PASTE YOUR APPS SCRIPT WEB APP URL HERE
 
   var accessToken = null;
   var currentUser = null;
   var appData = { feeSchedule: [] };
   var currentDevice = null;
   var currentAssignment = null;
-  var currentSuggestedAction = null;
   var assignStudentCache = [];
   var checkedDamages = {};
   var searchTimers = {};
   var sessionActivity = [];
-  var currentSearchMode = 'serial';
+  var currentTab = 'serial';
 
-  // ── Init ─────────────────────────────────────────────────
   window.onload = function() {
     setupSerialInput();
-
-    document.getElementById('search-user-input').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') { e.preventDefault(); doUserSearch(); }
-    });
-    document.getElementById('assign-student-search').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') { e.preventDefault(); searchStudentsForAssign(); }
-    });
+    document.getElementById('user-input').addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); doUserSearch(); } });
+    document.getElementById('assign-student-input').addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); searchStudentsForAssign(); } });
 
     var stored = localStorage.getItem('wcsc_token');
     var storedUser = localStorage.getItem('wcsc_user');
@@ -531,305 +467,254 @@
     }
   };
 
-  // ── Serial Search Setup ───────────────────────────────────
+  // ── Serial auto-search ───────────────────────────────────
   function setupSerialInput() {
-    var input = document.getElementById('search-serial-input');
+    var input = document.getElementById('serial-input');
     input.addEventListener('input', function() {
       var val = input.value.trim().toUpperCase();
       input.value = val;
       clearTimeout(searchTimers.serial);
-      document.getElementById('search-results').classList.add('hidden');
-      document.getElementById('search-searching').classList.add('hidden');
+      document.getElementById('search-results').innerHTML = '';
+      document.getElementById('searching-indicator').classList.add('hidden');
       if (val.length < 4) return;
-      document.getElementById('search-searching').classList.remove('hidden');
+      document.getElementById('searching-indicator').classList.remove('hidden');
       searchTimers.serial = setTimeout(function() { doSerialSearch(val); }, 600);
     });
   }
 
-  function switchSearchTab(mode) {
-    currentSearchMode = mode;
+  function switchTab(mode) {
+    currentTab = mode;
     document.getElementById('tab-serial').classList.toggle('active', mode === 'serial');
     document.getElementById('tab-user').classList.toggle('active', mode === 'user');
-    document.getElementById('search-serial-section').classList.toggle('hidden', mode !== 'serial');
-    document.getElementById('search-user-section').classList.toggle('hidden', mode !== 'user');
-    document.getElementById('search-results').classList.add('hidden');
-    document.getElementById('search-searching').classList.add('hidden');
-    if (mode === 'serial') {
-      setTimeout(function() { document.getElementById('search-serial-input').focus(); }, 200);
-    } else {
-      setTimeout(function() { document.getElementById('search-user-input').focus(); }, 200);
-    }
+    document.getElementById('section-serial').classList.toggle('hidden', mode !== 'serial');
+    document.getElementById('section-user').classList.toggle('hidden', mode !== 'user');
+    document.getElementById('search-results').innerHTML = '';
+    if (mode === 'serial') setTimeout(function() { document.getElementById('serial-input').focus(); }, 200);
+    else setTimeout(function() { document.getElementById('user-input').focus(); }, 200);
   }
 
-  // ── Serial Search ────────────────────────────────────────
+  // ── Serial search ────────────────────────────────────────
   function doSerialSearch(query) {
     api('searchDevices', { query: query })
       .then(function(res) {
-        document.getElementById('search-searching').classList.add('hidden');
+        document.getElementById('searching-indicator').classList.add('hidden');
         var container = document.getElementById('search-results');
         container.innerHTML = '';
-        if (!res.success) { container.innerHTML = '<p class="text-muted">' + res.error + '</p>'; container.classList.remove('hidden'); return; }
-        if (!res.devices || res.devices.length === 0) { container.innerHTML = '<p class="text-muted">No devices found matching "' + query + '"</p>'; container.classList.remove('hidden'); return; }
+        if (!res.success) { container.innerHTML = '<p class="text-muted">' + res.error + '</p>'; return; }
+        if (!res.devices || res.devices.length === 0) { container.innerHTML = '<p class="text-muted">No devices found matching "' + query + '"</p>'; return; }
         if (res.devices.length === 1) { loadDeviceDetail(res.devices[0].serialNumber); return; }
-        window._deviceSearchCache = res.devices;
+        window._deviceCache = res.devices;
         res.devices.forEach(function(d, idx) {
           var btn = document.createElement('button');
           btn.className = 'result-btn'; btn.type = 'button';
-          btn.innerHTML = '<span class="result-btn-primary">' + d.serialNumber + '</span><span class="result-btn-sub">' + d.model + ' · ' + d.orgUnit + ' · ' + d.status + '</span>';
-          btn.setAttribute('onclick', 'loadDeviceDetailFromCache(' + idx + ')');
+          btn.innerHTML = '<span class="result-btn-serial">' + d.serialNumber + '</span><span class="result-btn-sub">' + d.model + ' · ' + d.orgUnit + ' · ' + d.status + '</span>';
+          btn.onclick = function() { loadDeviceDetail(d.serialNumber); };
           container.appendChild(btn);
         });
-        container.classList.remove('hidden');
       })
-      .catch(function(err) { document.getElementById('search-searching').classList.add('hidden'); showToast(err.message, 'error'); });
+      .catch(function(err) { document.getElementById('searching-indicator').classList.add('hidden'); showToast(err.message, 'error'); });
   }
 
-  function loadDeviceDetailFromCache(idx) {
-    var devices = window._deviceSearchCache || [];
-    if (devices[idx]) loadDeviceDetail(devices[idx].serialNumber);
-  }
-
-  // ── User Search ──────────────────────────────────────────
+  // ── User search ──────────────────────────────────────────
   function doUserSearch() {
-    var query = document.getElementById('search-user-input').value.trim();
+    var query = document.getElementById('user-input').value.trim();
     if (query.length < 2) { showToast('Enter at least 2 characters', 'error'); return; }
-    document.getElementById('search-searching').classList.remove('hidden');
-    document.getElementById('search-results').classList.add('hidden');
-
-    api('searchByUser', { query: query })
+    document.getElementById('searching-indicator').classList.remove('hidden');
+    document.getElementById('search-results').innerHTML = '';
+    api('searchStudents', { query: query })
       .then(function(res) {
-        document.getElementById('search-searching').classList.add('hidden');
+        document.getElementById('searching-indicator').classList.add('hidden');
         var container = document.getElementById('search-results');
         container.innerHTML = '';
-        if (!res.success) { container.innerHTML = '<p class="text-muted">' + res.error + '</p>'; container.classList.remove('hidden'); return; }
-        if (!res.results || res.results.length === 0) { container.innerHTML = '<p class="text-muted">No students found.</p>'; container.classList.remove('hidden'); return; }
-
-        res.results.forEach(function(r, idx) {
-          var student = r.student;
-          var assignments = r.assignments || [];
+        if (!res.success || !res.students || res.students.length === 0) {
+          container.innerHTML = '<p class="text-muted">No students found.</p>'; return;
+        }
+        res.students.forEach(function(s) {
           var btn = document.createElement('button');
-          btn.className = 'result-btn'; btn.type = 'button';
-          var assignedSerial = assignments.length > 0 ? assignments[0].SerialNumber : null;
-          var subText = student.email;
-          if (assignedSerial) subText += ' · Device: ' + assignedSerial;
-          else subText += ' · No device assigned';
-          btn.innerHTML = '<span class="result-btn-primary" style="font-family:inherit;letter-spacing:0;">' + student.fullName + '</span><span class="result-btn-sub">' + subText + '</span>';
-          if (assignedSerial) {
-            btn.setAttribute('onclick', 'loadDeviceDetail("' + assignedSerial + '")');
-          } else {
-            // No device — store student and go to assign flow
-            window._userSearchCache = window._userSearchCache || {};
-            window._userSearchCache[idx] = student;
-            btn.setAttribute('onclick', 'showAssignForUser(' + idx + ')');
-          }
+          btn.className = 'student-btn'; btn.type = 'button';
+          btn.innerHTML = '<span class="student-btn-name">' + s.fullName + '</span><span class="student-btn-sub">' + s.email + '</span>';
+          btn.onclick = function() { loadDeviceDetailForUser(s.email); };
           container.appendChild(btn);
         });
-        container.classList.remove('hidden');
       })
-      .catch(function(err) { document.getElementById('search-searching').classList.add('hidden'); showToast(err.message, 'error'); });
+      .catch(function(err) { document.getElementById('searching-indicator').classList.add('hidden'); showToast(err.message, 'error'); });
   }
 
-  function showAssignForUser(idx) {
-    var student = (window._userSearchCache || {})[idx];
-    if (!student) return;
-    // Show a message that no device is assigned and let them search for one
-    showToast(student.fullName + ' has no assigned device', 'warning');
+  function loadDeviceDetailForUser(email) {
+    document.getElementById('searching-indicator').classList.remove('hidden');
+    document.getElementById('search-results').innerHTML = '';
+    api('getStudentDevice', { studentEmail: email })
+      .then(function(res) {
+        document.getElementById('searching-indicator').classList.add('hidden');
+        if (!res.success || !res.serialNumber) {
+          document.getElementById('search-results').innerHTML = '<p class="text-muted">No device assigned to this student.</p>';
+          return;
+        }
+        loadDeviceDetail(res.serialNumber);
+      })
+      .catch(function(err) { document.getElementById('searching-indicator').classList.add('hidden'); showToast(err.message, 'error'); });
   }
 
-  // ── Load Device Detail ────────────────────────────────────
+  // ── Load device detail ────────────────────────────────────
   function loadDeviceDetail(serialNumber) {
-    document.getElementById('search-results').classList.add('hidden');
-    document.getElementById('search-searching').classList.remove('hidden');
-
+    document.getElementById('search-results').innerHTML = '';
+    document.getElementById('searching-indicator').classList.remove('hidden');
+    document.getElementById('device-detail').classList.add('hidden');
     api('lookupDevice', { serialNumber: serialNumber })
       .then(function(res) {
-        document.getElementById('search-searching').classList.add('hidden');
+        document.getElementById('searching-indicator').classList.add('hidden');
         if (!res.success) { showToast(res.error, 'error'); return; }
         renderDeviceDetail(res);
         document.getElementById('device-detail').classList.remove('hidden');
         document.querySelector('.content').scrollTop = 0;
       })
-      .catch(function(err) { document.getElementById('search-searching').classList.add('hidden'); showToast(err.message, 'error'); });
+      .catch(function(err) { document.getElementById('searching-indicator').classList.add('hidden'); showToast(err.message, 'error'); });
   }
 
   function renderDeviceDetail(res) {
     currentDevice = res.device;
     currentAssignment = res.activeAssignment;
-    currentSuggestedAction = res.suggestedAction;
 
     // Hide all panels
-    ['panel-assign','panel-autoassign','panel-return','panel-damage'].forEach(function(id) {
+    ['panel-autoassign','panel-assign','panel-return','panel-damage'].forEach(function(id) {
       document.getElementById(id).classList.add('hidden');
     });
-    ['assign-result','autoassign-result','return-result','damage-result'].forEach(function(id) {
+    ['autoassign-result','assign-result','return-result','damage-result'].forEach(function(id) {
       document.getElementById(id).classList.add('hidden');
     });
 
+    var d = res.device;
+
     // Device card
-    var d = currentDevice;
-    document.getElementById('device-card').innerHTML =
-      '<div class="device-card-serial">' + d.serialNumber + '</div>' +
-      '<div class="device-card-model">' + d.model + '</div>' +
-      '<div class="device-card-grid">' +
-        field('Org Unit', d.orgUnit) +
-        field('Status', d.status) +
-        field('Location', d.annotatedLocation || '—') +
-        field('Asset ID', d.annotatedAssetId || '—') +
-        field('Last User', d.annotatedUser || '—') +
-        field('Recent User', d.recentUser || '—') +
-        field('OS Version', d.osVersion || '—') +
-        field('Last Sync', d.lastSync ? new Date(d.lastSync).toLocaleDateString() : '—') +
+    document.getElementById('device-card-el').innerHTML =
+      '<div class="device-serial">' + d.serialNumber + '</div>' +
+      '<div class="device-model">' + d.model + '</div>' +
+      '<div class="device-fields">' +
+        dfield('Org Unit', d.orgUnit || d.orgUnitPath) +
+        dfield('Status', d.status) +
+        dfield('Location', d.annotatedLocation || '—') +
+        dfield('Asset ID', d.annotatedAssetId || '—') +
+        dfield('Annotated User', d.annotatedUser || '—') +
+        dfield('Last User', d.lastUser || d.recentUser || '—') +
+        dfield('OS Version', d.osVersion || '—') +
+        dfield('Last Sync', d.lastSyncTime ? new Date(d.lastSyncTime).toLocaleDateString() : '—') +
       '</div>';
 
     // Status banner + actions
-    var bannerEl = document.getElementById('device-status-banner');
-    var actionsEl = document.getElementById('device-actions');
+    var bannerEl = document.getElementById('status-banner-el');
+    var actionEl = document.getElementById('action-buttons');
 
     if (res.suggestedAction === 'assigned' && currentAssignment) {
-      bannerEl.innerHTML =
-        '<div class="status-banner assigned">' +
-        '✅ Currently Assigned' +
-        '<div class="status-banner-sub">To: <strong>' + currentAssignment.StudentEmail + '</strong> since ' + new Date(currentAssignment.AssignedDate).toLocaleDateString() + '</div>' +
-        '</div>';
-      actionsEl.innerHTML =
-        '<div class="action-grid">' +
-        '<button class="action-btn danger" onclick="openPanel(\'panel-return\')">' +
-          '<span class="action-btn-icon">↩️</span>Return' +
-        '</button>' +
-        '<button class="action-btn warning" onclick="openPanel(\'panel-damage\')">' +
-          '<span class="action-btn-icon">⚠️</span>Log Damage' +
-        '</button>' +
-        '</div>';
-      // Pre-fill damage student email
-      document.getElementById('damage-student').value = currentAssignment.StudentEmail;
+      var a = currentAssignment;
+      bannerEl.innerHTML = '<div class="status-banner assigned"><div class="status-banner-title">✅ Currently Assigned</div><div class="status-banner-sub">→ ' + a.StudentEmail + ' · since ' + new Date(a.AssignedDate).toLocaleDateString() + '</div></div>';
+      actionEl.innerHTML =
+        '<button class="btn btn-success" onclick="showPanel(\'panel-return\')">↩️ Return Device</button>' +
+        '<button class="btn btn-danger" onclick="showPanel(\'panel-damage\')">⚠️ Log Damage</button>';
+      document.getElementById('damage-student').value = a.StudentEmail;
+      document.getElementById('return-info').textContent = 'Returning from: ' + a.StudentEmail;
 
     } else if (res.suggestedAction === 'suggest_assign') {
-      bannerEl.innerHTML =
-        '<div class="status-banner suggest">' +
-        '🔔 Unassigned — Last User Found' +
-        '<div class="status-banner-sub">Last user: <strong>' + d.recentUser + '</strong></div>' +
-        '</div>';
-
-      // Pre-fill autoassign info
-      document.getElementById('autoassign-info').innerHTML =
-        'The last user of this device was:<br>' +
-        '<strong>' + d.recentUser + '</strong><br><br>' +
-        'Would you like to assign this device to them? If they repaired it or it was used by staff, tap Cancel to assign to someone else instead.';
-
-      actionsEl.innerHTML =
-        '<div class="action-grid">' +
-        '<button class="action-btn success action-btn-full" onclick="openPanel(\'panel-autoassign\')">' +
-          '<span class="action-btn-icon">✅</span>Assign to Last User' +
-        '</button>' +
-        '<button class="action-btn outline action-btn-full" onclick="openPanel(\'panel-assign\')" style="margin-top:0;">' +
-          '<span class="action-btn-icon">🔍</span>Assign to Different Student' +
-        '</button>' +
-        '</div>';
+      var lastUser = d.lastUser || d.recentUser;
+      bannerEl.innerHTML = '<div class="status-banner suggest"><div class="status-banner-title">🔔 Unassigned — Last User Found</div><div class="status-banner-sub">Last user: ' + lastUser + '</div></div>';
+      document.getElementById('autoassign-info').innerHTML = 'Last user of this device:<br><strong>' + lastUser + '</strong><br><br>Confirm to assign, or tap Cancel to assign a different student.';
+      actionEl.innerHTML =
+        '<button class="btn btn-success" onclick="showPanel(\'panel-autoassign\')">✅ Assign to Last User</button>' +
+        '<button class="btn btn-outline" onclick="showPanel(\'panel-assign\')">🔍 Assign Different Student</button>';
 
     } else {
-      bannerEl.innerHTML =
-        '<div class="status-banner unassigned">' +
-        '❌ Unassigned' +
-        '<div class="status-banner-sub">No active assignment — assign to a student below</div>' +
-        '</div>';
-      actionsEl.innerHTML =
-        '<button class="action-btn primary action-btn-full" style="padding:14px;border-radius:10px;margin-bottom:16px;" onclick="openPanel(\'panel-assign\')">' +
-          '🔗 Assign to Student' +
-        '</button>';
+      bannerEl.innerHTML = '<div class="status-banner unassigned"><div class="status-banner-title">❌ Unassigned</div><div class="status-banner-sub">No active assignment found</div></div>';
+      actionEl.innerHTML = '<button class="btn btn-primary" onclick="showPanel(\'panel-assign\')">🔗 Assign to Student</button>';
     }
 
-    // Build damage checklist
+    // Damage checklist
     buildDamageChecklist();
 
     // Damage history
     if (res.damages && res.damages.length > 0) {
-      var histHtml = res.damages.slice(0, 10).map(function(d) {
-        return '<div class="damage-history-item">' +
-          '<div class="damage-history-title">' + d.DamageType + ' — $' + parseFloat(d.Fee).toFixed(2) +
-          ' <span class="badge badge-' + (d.BillStatus === 'Paid' ? 'paid' : d.BillStatus === 'Unpaid' ? 'unpaid' : 'unbilled') + '">' + d.BillStatus + '</span></div>' +
-          '<div class="damage-history-sub">' + new Date(d.DamageDate).toLocaleDateString() +
-          (d.StudentEmail ? ' · ' + d.StudentEmail : '') + '</div>' +
-          '</div>';
+      document.getElementById('damage-history-list').innerHTML = res.damages.slice(0, 10).map(function(d) {
+        return '<div class="history-item"><div class="history-item-title">' + d.DamageType + ' — $' + parseFloat(d.Fee||0).toFixed(2) +
+          ' <span class="badge badge-' + (d.BillStatus==='Paid'?'paid':d.BillStatus==='Unpaid'?'unpaid':'unbilled') + '">' + (d.BillStatus||'Unbilled') + '</span></div>' +
+          '<div class="history-item-sub">' + new Date(d.DateLogged).toLocaleDateString() + (d.StudentEmail ? ' · ' + d.StudentEmail : '') + '</div></div>';
       }).join('');
-      document.getElementById('damage-history-list').innerHTML = histHtml;
-      document.getElementById('damage-history-section').classList.remove('hidden');
+      document.getElementById('damage-history-card').classList.remove('hidden');
     } else {
-      document.getElementById('damage-history-section').classList.add('hidden');
+      document.getElementById('damage-history-card').classList.add('hidden');
     }
   }
 
-  function field(label, value) {
-    return '<div class="device-card-field">' +
-      '<div class="device-card-label">' + label + '</div>' +
-      '<div class="device-card-value">' + (value || '—') + '</div>' +
-      '</div>';
+  function dfield(label, value) {
+    return '<div><div class="device-field-label">' + label + '</div><div class="device-field-value">' + (value || '—') + '</div></div>';
   }
 
-  function openPanel(panelId) {
-    // Close other panels first
-    ['panel-assign','panel-autoassign','panel-return','panel-damage'].forEach(function(id) {
-      if (id !== panelId) document.getElementById(id).classList.add('hidden');
+  function showPanel(id) {
+    ['panel-autoassign','panel-assign','panel-return','panel-damage'].forEach(function(p) {
+      if (p !== id) document.getElementById(p).classList.add('hidden');
     });
-    document.getElementById(panelId).classList.remove('hidden');
-    // Scroll to panel
-    setTimeout(function() {
-      var el = document.getElementById(panelId);
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
-
-    if (panelId === 'panel-return' && currentAssignment) {
-      document.getElementById('return-assignment-info').innerHTML =
-        'Returning device from <strong>' + currentAssignment.StudentEmail + '</strong>';
-    }
+    document.getElementById(id).classList.remove('hidden');
+    setTimeout(function() { document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
   }
 
-  function cancelPanel(panelId) {
-    document.getElementById(panelId).classList.add('hidden');
-  }
+  function hidePanel(id) { document.getElementById(id).classList.add('hidden'); }
 
-  // ── Student Search (for assign panel) ────────────────────
+  // ── Student search for assign ────────────────────────────
   function searchStudentsForAssign() {
-    var query = document.getElementById('assign-student-search').value.trim();
+    var query = document.getElementById('assign-student-input').value.trim();
     if (query.length < 2) { showToast('Enter at least 2 characters', 'error'); return; }
     api('searchStudents', { query: query })
       .then(function(res) {
         var container = document.getElementById('assign-student-results');
         container.innerHTML = '';
-        if (!res.success || !res.students || res.students.length === 0) {
+        if (!res.success || !res.students || !res.students.length) {
           container.innerHTML = '<p class="text-muted">No students found.</p>';
           container.classList.remove('hidden'); return;
         }
         assignStudentCache = res.students;
         res.students.forEach(function(s, idx) {
           var btn = document.createElement('button');
-          btn.className = 'student-result-btn'; btn.type = 'button';
-          btn.innerHTML = '<span class="student-result-name">' + s.fullName + '</span><span class="student-result-sub">' + s.email + (s.studentId ? ' · ID: ' + s.studentId : '') + '</span>';
-          btn.setAttribute('onclick', 'selectAssignStudent(' + idx + ')');
+          btn.className = 'student-btn'; btn.type = 'button';
+          btn.innerHTML = '<span class="student-btn-name">' + s.fullName + '</span><span class="student-btn-sub">' + s.email + '</span>';
+          btn.onclick = function() { selectAssignStudent(idx); };
           container.appendChild(btn);
         });
         container.classList.remove('hidden');
       })
-      .catch(function(err) { showToast('Search error: ' + err.message, 'error'); });
+      .catch(function(err) { showToast(err.message, 'error'); });
   }
 
   function selectAssignStudent(idx) {
     var student = assignStudentCache[idx];
     if (!student) return;
     document.getElementById('assign-student-results').classList.add('hidden');
-    window._selectedAssignStudent = student;
-    document.getElementById('assign-selected-student').innerHTML =
-      '<div class="info-panel">' +
-      '<div class="info-row"><span class="info-label">Name</span><span class="info-val">' + student.fullName + '</span></div>' +
-      '<div class="info-row"><span class="info-label">Email</span><span class="info-val">' + student.email + '</span></div>' +
-      (student.studentId ? '<div class="info-row"><span class="info-label">Student ID</span><span class="info-val"><strong>' + student.studentId + '</strong></span></div>' : '') +
-      '</div>';
-    document.getElementById('assign-selected-student').classList.remove('hidden');
+    window._selectedStudent = student;
+    document.getElementById('assign-selected').innerHTML =
+      '<div class="result-box info" style="margin-bottom:10px;">' +
+      '<strong>' + student.fullName + '</strong><br>' + student.email + '</div>';
+    document.getElementById('assign-selected').classList.remove('hidden');
     document.getElementById('assign-confirm-section').classList.remove('hidden');
   }
 
-  // ── Assign ───────────────────────────────────────────────
+  // ── Actions ──────────────────────────────────────────────
+  function confirmAutoAssign() {
+    if (!currentDevice) return;
+    var userEmail = currentDevice.lastUser || currentDevice.recentUser;
+    var notes = document.getElementById('autoassign-notes').value;
+    var btn = event.target; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Assigning...';
+    api('confirmAutoAssign', { serialNumber: currentDevice.serialNumber, deviceId: currentDevice.deviceId, userEmail: userEmail, notes: notes })
+      .then(function(res) {
+        btn.disabled = false; btn.innerHTML = '✅ Confirm Assignment';
+        var el = document.getElementById('autoassign-result'); el.classList.remove('hidden');
+        if (res.success) {
+          el.className = 'result-box success'; el.textContent = '✅ Assigned to ' + userEmail;
+          showToast('Device assigned!', 'success');
+          logActivity('Assigned ' + currentDevice.serialNumber + ' → ' + userEmail);
+          setTimeout(function() { loadDeviceDetail(currentDevice.serialNumber); }, 1800);
+        } else { el.className = 'result-box error'; el.textContent = res.error; }
+      })
+      .catch(function(err) { btn.disabled = false; btn.innerHTML = '✅ Confirm Assignment'; showToast(err.message, 'error'); });
+  }
+
   function confirmAssign() {
-    var student = window._selectedAssignStudent;
+    var student = window._selectedStudent;
     if (!student || !currentDevice) return;
     var notes = document.getElementById('assign-notes').value;
     var btn = event.target; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Assigning...';
@@ -841,33 +726,12 @@
           el.className = 'result-box success'; el.textContent = '✅ Assigned to ' + student.fullName;
           showToast('Device assigned!', 'success');
           logActivity('Assigned ' + currentDevice.serialNumber + ' → ' + student.email);
-          setTimeout(function() { loadDeviceDetail(currentDevice.serialNumber); }, 2000);
+          setTimeout(function() { loadDeviceDetail(currentDevice.serialNumber); }, 1800);
         } else { el.className = 'result-box error'; el.textContent = res.error; }
       })
       .catch(function(err) { btn.disabled = false; btn.innerHTML = '✅ Confirm Assignment'; showToast(err.message, 'error'); });
   }
 
-  // ── Auto-assign confirm ───────────────────────────────────
-  function confirmAutoAssign() {
-    if (!currentDevice) return;
-    var userEmail = currentDevice.recentUser;
-    var notes = document.getElementById('autoassign-notes').value;
-    var btn = event.target; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Assigning...';
-    api('confirmAutoAssign', { serialNumber: currentDevice.serialNumber, deviceId: currentDevice.deviceId, userEmail: userEmail, notes: notes })
-      .then(function(res) {
-        btn.disabled = false; btn.innerHTML = '✅ Confirm Assignment';
-        var el = document.getElementById('autoassign-result'); el.classList.remove('hidden');
-        if (res.success) {
-          el.className = 'result-box success'; el.textContent = '✅ Auto-assigned to ' + userEmail;
-          showToast('Device assigned!', 'success');
-          logActivity('Auto-assigned ' + currentDevice.serialNumber + ' → ' + userEmail);
-          setTimeout(function() { loadDeviceDetail(currentDevice.serialNumber); }, 2000);
-        } else { el.className = 'result-box error'; el.textContent = res.error; }
-      })
-      .catch(function(err) { btn.disabled = false; btn.innerHTML = '✅ Confirm Assignment'; showToast(err.message, 'error'); });
-  }
-
-  // ── Return ───────────────────────────────────────────────
   function confirmReturn() {
     if (!currentDevice) return;
     var notes = document.getElementById('return-notes').value;
@@ -880,13 +744,13 @@
           el.className = 'result-box success'; el.textContent = '✅ Device returned successfully!';
           showToast('Device checked in!', 'success');
           logActivity('Returned ' + currentDevice.serialNumber);
-          setTimeout(function() { loadDeviceDetail(currentDevice.serialNumber); }, 2000);
+          setTimeout(function() { loadDeviceDetail(currentDevice.serialNumber); }, 1800);
         } else { el.className = 'result-box error'; el.textContent = res.error; }
       })
       .catch(function(err) { btn.disabled = false; btn.innerHTML = '✅ Confirm Return'; showToast(err.message, 'error'); });
   }
 
-  // ── Damage ───────────────────────────────────────────────
+  // ── Damage checklist ─────────────────────────────────────
   function buildDamageChecklist() {
     checkedDamages = {};
     var fees = appData.feeSchedule || [];
@@ -894,14 +758,12 @@
     list.innerHTML = '';
     fees.forEach(function(f, idx) {
       var item = document.createElement('div');
-      item.className = 'damage-check-item'; item.id = 'dmg-' + idx;
-      item.setAttribute('onclick', 'toggleDamage(' + idx + ')');
+      item.className = 'damage-item'; item.id = 'di-' + idx;
+      item.onclick = function() { toggleDamage(idx); };
       item.innerHTML =
-        '<div class="damage-check-box" id="dmg-box-' + idx + '"></div>' +
-        '<div class="damage-check-info">' +
-          '<div class="damage-check-name">' + f.DamageType + '</div>' +
-          '<div class="damage-check-fee">$' + parseFloat(f.Fee).toFixed(2) + '</div>' +
-        '</div>';
+        '<div class="damage-check-box" id="di-box-' + idx + '"></div>' +
+        '<div style="flex:1"><div class="damage-item-name">' + f.DamageType + '</div>' +
+        '<div class="damage-item-fee">$' + parseFloat(f.DefaultFee||0).toFixed(2) + '</div></div>';
       list.appendChild(item);
     });
     document.getElementById('damage-total').textContent = '$0.00';
@@ -911,14 +773,14 @@
     var fees = appData.feeSchedule || [];
     if (checkedDamages[idx]) {
       delete checkedDamages[idx];
-      document.getElementById('dmg-' + idx).classList.remove('checked');
-      document.getElementById('dmg-box-' + idx).textContent = '';
+      document.getElementById('di-' + idx).classList.remove('checked');
+      document.getElementById('di-box-' + idx).textContent = '';
     } else {
-      checkedDamages[idx] = { damageType: fees[idx].DamageType, fee: parseFloat(fees[idx].Fee) || 0, description: '' };
-      document.getElementById('dmg-' + idx).classList.add('checked');
-      document.getElementById('dmg-box-' + idx).textContent = '✓';
+      checkedDamages[idx] = { DamageType: fees[idx].DamageType, Fee: parseFloat(fees[idx].DefaultFee||0), Description: '' };
+      document.getElementById('di-' + idx).classList.add('checked');
+      document.getElementById('di-box-' + idx).textContent = '✓';
     }
-    var total = Object.values(checkedDamages).reduce(function(s,d) { return s+(d.fee||0); }, 0);
+    var total = Object.values(checkedDamages).reduce(function(s, d) { return s + (d.Fee||0); }, 0);
     document.getElementById('damage-total').textContent = '$' + total.toFixed(2);
   }
 
@@ -937,61 +799,47 @@
           el.className = 'result-box success'; el.textContent = '✅ ' + res.count + ' damage(s) logged.';
           showToast(res.count + ' damage(s) logged!', 'success');
           logActivity('Logged ' + res.count + ' damage(s) on ' + currentDevice.serialNumber);
-          setTimeout(function() { loadDeviceDetail(currentDevice.serialNumber); }, 2000);
+          setTimeout(function() { loadDeviceDetail(currentDevice.serialNumber); }, 1800);
         } else { el.className = 'result-box error'; el.textContent = res.error; }
       })
       .catch(function(err) { btn.disabled = false; btn.innerHTML = '⚠️ Log Selected Damages'; showToast(err.message, 'error'); });
   }
 
-  // ── Reset Lookup ──────────────────────────────────────────
   function resetLookup() {
     currentDevice = null; currentAssignment = null;
     document.getElementById('device-detail').classList.add('hidden');
-    document.getElementById('search-results').classList.add('hidden');
-    document.getElementById('search-serial-input').value = '';
-    document.getElementById('search-user-input').value = '';
-    ['panel-assign','panel-autoassign','panel-return','panel-damage'].forEach(function(id) {
-      document.getElementById(id).classList.add('hidden');
-    });
+    document.getElementById('search-results').innerHTML = '';
+    document.getElementById('serial-input').value = '';
+    document.getElementById('user-input').value = '';
     document.querySelector('.content').scrollTop = 0;
-    setTimeout(function() {
-      if (currentSearchMode === 'serial') document.getElementById('search-serial-input').focus();
-      else document.getElementById('search-user-input').focus();
-    }, 300);
-  }
-
-  // ── Session Activity Log ──────────────────────────────────
-  function logActivity(msg) {
-    sessionActivity.unshift({ msg: msg, time: new Date().toLocaleTimeString() });
-    if (sessionActivity.length > 20) sessionActivity.pop();
-    renderHistory();
-  }
-
-  function renderHistory() {
-    var list = document.getElementById('history-list');
-    if (sessionActivity.length === 0) {
-      list.innerHTML = '<p class="text-muted">No activity yet this session.</p>';
-      return;
-    }
-    list.innerHTML = sessionActivity.map(function(a) {
-      return '<div style="padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;">' +
-        '<div style="font-weight:600;">' + a.msg + '</div>' +
-        '<div style="font-size:12px;color:var(--text-muted);margin-top:2px;">' + a.time + '</div>' +
-        '</div>';
-    }).join('');
+    setTimeout(function() { document.getElementById('serial-input').focus(); }, 300);
   }
 
   // ── Navigation ───────────────────────────────────────────
   function showPage(page) {
-    document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('.page').forEach(function(p) {
+      p.classList.toggle('active', p.id === 'page-' + page);
+      p.classList.toggle('hidden', p.id !== 'page-' + page);
+    });
     document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
-    document.getElementById('page-' + page).classList.add('active');
-    document.getElementById('bnav-' + page).classList.add('active');
+    var bnav = document.getElementById('bnav-' + page);
+    if (bnav) bnav.classList.add('active');
     document.querySelector('.content').scrollTop = 0;
     if (page === 'history') renderHistory();
-    if (page === 'lookup') setTimeout(function() {
-      if (currentSearchMode === 'serial') document.getElementById('search-serial-input').focus();
-    }, 300);
+    if (page === 'lookup') setTimeout(function() { document.getElementById('serial-input').focus(); }, 300);
+  }
+
+  function logActivity(msg) {
+    sessionActivity.unshift({ msg: msg, time: new Date().toLocaleTimeString() });
+    if (sessionActivity.length > 20) sessionActivity.pop();
+  }
+
+  function renderHistory() {
+    var list = document.getElementById('history-list');
+    if (!sessionActivity.length) { list.innerHTML = '<p class="text-muted">No activity yet.</p>'; return; }
+    list.innerHTML = sessionActivity.map(function(a) {
+      return '<div class="history-item"><div class="history-item-title">' + a.msg + '</div><div class="history-item-sub">' + a.time + '</div></div>';
+    }).join('');
   }
 
   // ── Auth ─────────────────────────────────────────────────
@@ -1040,8 +888,7 @@
         document.getElementById('header-user').textContent = data.user || currentUser;
         document.getElementById('loading-overlay').classList.add('hidden');
         document.getElementById('app').classList.add('visible');
-        showPage('lookup');
-        setTimeout(function() { document.getElementById('search-serial-input').focus(); }, 400);
+        setTimeout(function() { document.getElementById('serial-input').focus(); }, 400);
       })
       .catch(function(err) {
         document.getElementById('loading-overlay').classList.add('hidden');
@@ -1050,18 +897,19 @@
       });
   }
 
+  // ── API ──────────────────────────────────────────────────
   function api(action, params) {
-    if (!APPS_SCRIPT_URL) return Promise.reject(new Error('Apps Script URL not configured.'));
+    if (!APPS_SCRIPT_URL) return Promise.reject(new Error('Apps Script URL not configured. Please add it to the app.'));
     return fetch(APPS_SCRIPT_URL, {
-      method: 'POST', headers: { 'Content-Type': 'text/plain' },
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify({ token: accessToken, action: action, params: params })
     }).then(function(r) { return r.json(); });
   }
 
   function showToast(msg, type) {
     var t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = 'show toast-' + (type || 'success');
+    t.textContent = msg; t.className = 'show toast-' + (type || 'success');
     clearTimeout(window._toastTimer);
     window._toastTimer = setTimeout(function() { t.className = ''; }, 3000);
   }
