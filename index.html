@@ -21,6 +21,7 @@
       --text-muted: #6b7f94;
       --success: #1a7f4b;
       --error: #c0392b;
+      --warning: #d68910;
       --radius: 12px;
       --shadow: 0 2px 12px rgba(26,58,92,0.10);
       --header-height: 56px;
@@ -99,13 +100,23 @@
     .page { display: none; }
     .page.active { display: block; }
     .page-title { font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
-    .page-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+    .page-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
 
     /* ── Cards ── */
     .card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; margin-bottom: 16px; }
     .card-title { font-size: 12px; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; }
 
-    /* ── Form Elements ── */
+    /* ── Search tabs ── */
+    .search-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+    .search-tab {
+      flex: 1; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 700;
+      border: 1.5px solid var(--border); background: white; cursor: pointer; color: var(--text-muted);
+      text-align: center; -webkit-appearance: none;
+    }
+    .search-tab.active { background: var(--navy); color: white; border-color: var(--navy); }
+    .search-tab:active { opacity: 0.8; }
+
+    /* ── Form ── */
     .form-group { margin-bottom: 14px; }
     .form-group label { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
     .form-group input, .form-group textarea {
@@ -113,88 +124,129 @@
       font-size: 16px; color: var(--text); background: white; -webkit-appearance: none; appearance: none;
     }
     .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--navy); }
-    .form-group textarea { resize: none; min-height: 80px; font-family: inherit; }
+    .form-group textarea { resize: none; min-height: 70px; font-family: inherit; }
+    .serial-input { font-family: 'SF Mono', Monaco, monospace !important; letter-spacing: 2px !important; font-size: 20px !important; padding: 16px 14px !important; }
+    .search-hint { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
 
-    /* ── Serial search field ── */
-    .serial-hint { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
-    .serial-hint strong { color: var(--navy); }
+    /* ── Searching indicator ── */
+    .searching-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 0; font-size: 14px; color: var(--text-muted);
+    }
 
-    /* ── Device result buttons ── */
-    .device-result-btn {
+    /* ── Result list buttons ── */
+    .result-btn {
       display: block; width: 100%; text-align: left; padding: 14px 16px;
       background: white; border: 1.5px solid var(--border); border-radius: 10px;
       margin-bottom: 8px; cursor: pointer; color: var(--text); -webkit-appearance: none;
     }
-    .device-result-btn:active { background: #eaf1fb; border-color: var(--navy); }
-    .device-result-serial { font-weight: 700; display: block; font-size: 16px; font-family: 'SF Mono', Monaco, monospace; letter-spacing: 1px; }
-    .device-result-sub { font-size: 12px; color: var(--text-muted); display: block; margin-top: 3px; }
+    .result-btn:active { background: #eaf1fb; border-color: var(--navy); }
+    .result-btn-primary { font-weight: 700; display: block; font-size: 15px; font-family: 'SF Mono', Monaco, monospace; letter-spacing: 1px; }
+    .result-btn-sub { font-size: 12px; color: var(--text-muted); display: block; margin-top: 3px; font-family: inherit; letter-spacing: 0; }
 
-    /* ── Student result buttons ── */
-    .student-result-btn {
-      display: block; width: 100%; text-align: left; padding: 14px 16px;
-      background: white; border: 1.5px solid var(--border); border-radius: 10px;
-      margin-bottom: 8px; cursor: pointer; color: var(--text); -webkit-appearance: none;
+    /* ── Device Card ── */
+    .device-card {
+      background: var(--navy); color: white; border-radius: var(--radius);
+      padding: 16px; margin-bottom: 16px;
     }
-    .student-result-btn:active { background: #eaf1fb; border-color: var(--navy); }
-    .student-result-name { font-weight: 700; display: block; font-size: 15px; }
-    .student-result-sub { font-size: 12px; color: var(--text-muted); display: block; margin-top: 3px; }
+    .device-card-serial { font-family: 'SF Mono', Monaco, monospace; font-size: 22px; font-weight: 700; letter-spacing: 2px; color: var(--gold-light); margin-bottom: 4px; }
+    .device-card-model { font-size: 14px; opacity: 0.8; margin-bottom: 12px; }
+    .device-card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .device-card-field { }
+    .device-card-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.5; margin-bottom: 2px; }
+    .device-card-value { font-size: 13px; opacity: 0.9; word-break: break-all; }
+    .device-card-value.mono { font-family: 'SF Mono', Monaco, monospace; letter-spacing: 0.5px; }
 
-    /* ── Damage Checklist ── */
+    /* ── Status Banner ── */
+    .status-banner {
+      border-radius: 10px; padding: 14px 16px; margin-bottom: 16px;
+      font-size: 14px; font-weight: 600;
+    }
+    .status-banner.assigned { background: #eafaf1; border: 1.5px solid #a9dfbf; color: var(--success); }
+    .status-banner.unassigned { background: #fdf2f2; border: 1.5px solid #f5b7b1; color: var(--error); }
+    .status-banner.suggest { background: #fff8e1; border: 1.5px solid #f9d07a; color: var(--warning); }
+    .status-banner-sub { font-size: 13px; font-weight: 400; margin-top: 4px; opacity: 0.85; }
+
+    /* ── Action Buttons ── */
+    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .action-btn {
+      padding: 14px 12px; border-radius: 10px; font-size: 14px; font-weight: 700;
+      border: none; cursor: pointer; text-align: center; -webkit-appearance: none;
+    }
+    .action-btn:active { opacity: 0.8; }
+    .action-btn.primary { background: var(--navy); color: white; }
+    .action-btn.danger { background: var(--error); color: white; }
+    .action-btn.warning { background: var(--warning); color: white; }
+    .action-btn.success { background: var(--success); color: white; }
+    .action-btn.outline { background: white; border: 1.5px solid var(--border); color: var(--text); }
+    .action-btn-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+    .action-btn-full { grid-column: 1 / -1; }
+
+    /* ── Inline forms (expanded panels) ── */
+    .inline-panel {
+      background: #f8fafc; border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 16px; margin-bottom: 16px;
+    }
+    .inline-panel-title { font-size: 13px; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; }
+
+    /* ── Damage checklist ── */
     .damage-check-item {
-      display: flex; align-items: center; gap: 14px;
-      padding: 14px 16px; background: white;
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px; background: white;
       border: 1.5px solid var(--border); border-radius: 10px; margin-bottom: 8px; cursor: pointer;
     }
     .damage-check-item.checked { border-color: var(--navy); background: #eaf1fb; }
     .damage-check-item:active { opacity: 0.8; }
     .damage-check-box {
-      width: 26px; height: 26px; border: 2px solid var(--border); border-radius: 6px;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 15px;
+      width: 24px; height: 24px; border: 2px solid var(--border); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px;
     }
     .damage-check-item.checked .damage-check-box { background: var(--navy); border-color: var(--navy); color: white; }
     .damage-check-info { flex: 1; }
-    .damage-check-name { font-size: 15px; font-weight: 600; }
-    .damage-check-fee { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+    .damage-check-name { font-size: 14px; font-weight: 600; }
+    .damage-check-fee { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
     .damage-check-item.checked .damage-check-fee { color: var(--navy); font-weight: 600; }
-
-    /* ── Total Bar ── */
     .total-bar {
       background: var(--navy); color: white; border-radius: 10px;
-      padding: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+      padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;
     }
-    .total-bar-label { font-size: 14px; opacity: 0.8; }
-    .total-bar-amount { font-size: 26px; font-weight: 800; }
+    .total-bar-label { font-size: 13px; opacity: 0.8; }
+    .total-bar-amount { font-size: 24px; font-weight: 800; }
 
-    /* ── Info Panel ── */
-    .info-panel { background: #f0f4f8; border-radius: 10px; padding: 14px; border-left: 4px solid var(--navy); margin-top: 12px; }
-    .info-row { display: flex; gap: 8px; margin-bottom: 6px; font-size: 14px; }
-    .info-label { font-weight: 600; color: var(--text-muted); min-width: 100px; font-size: 13px; }
+    /* ── Damage history ── */
+    .damage-history-item { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .damage-history-item:last-child { border-bottom: none; }
+    .damage-history-title { font-weight: 600; }
+    .damage-history-sub { color: var(--text-muted); margin-top: 2px; font-size: 12px; }
+
+    /* ── Student search results ── */
+    .student-result-btn {
+      display: block; width: 100%; text-align: left; padding: 12px 14px;
+      background: white; border: 1.5px solid var(--border); border-radius: 10px;
+      margin-bottom: 8px; cursor: pointer; color: var(--text); -webkit-appearance: none;
+    }
+    .student-result-btn:active { background: #eaf1fb; border-color: var(--navy); }
+    .student-result-name { font-weight: 700; display: block; font-size: 14px; }
+    .student-result-sub { font-size: 12px; color: var(--text-muted); display: block; margin-top: 2px; }
+
+    /* ── Info panel ── */
+    .info-panel { background: #f0f4f8; border-radius: 10px; padding: 12px 14px; border-left: 4px solid var(--navy); margin-bottom: 14px; }
+    .info-row { display: flex; gap: 8px; margin-bottom: 4px; font-size: 13px; }
+    .info-label { font-weight: 600; color: var(--text-muted); min-width: 90px; font-size: 12px; }
     .info-val { color: var(--text); flex: 1; word-break: break-all; }
 
-    /* ── History ── */
-    .history-item { padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
-    .history-item:last-child { border-bottom: none; }
-    .history-item-title { font-weight: 600; margin-bottom: 3px; }
-    .history-item-sub { font-size: 12px; color: var(--text-muted); }
-
-    /* ── Result Boxes ── */
-    .result-box { border-radius: 10px; padding: 14px 16px; margin-top: 12px; font-size: 14px; line-height: 1.5; }
-    .result-box.success { background: #eafaf1; border: 1px solid #a9dfbf; color: var(--success); }
-    .result-box.error { background: #fdf2f2; border: 1px solid #f5b7b1; color: var(--error); }
-    .result-box.info { background: #eaf1fb; border: 1px solid #aed6f1; color: #1a5276; }
-
-    /* ── Badge ── */
+    /* ── Badges ── */
     .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
     .badge-active { background: #eafaf1; color: var(--success); }
     .badge-returned { background: #eaf1fb; color: #1a5276; }
     .badge-unpaid { background: #fdf2f2; color: var(--error); }
     .badge-paid { background: #eafaf1; color: var(--success); }
-    .badge-unbilled { background: #fff8e1; color: #d68910; }
+    .badge-unbilled { background: #fff8e1; color: var(--warning); }
 
     /* ── Buttons ── */
     .btn {
-      width: 100%; padding: 15px; border-radius: 10px;
-      font-size: 16px; font-weight: 700; border: none;
+      width: 100%; padding: 14px; border-radius: 10px;
+      font-size: 15px; font-weight: 700; border: none;
       cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
       margin-bottom: 10px; -webkit-appearance: none;
     }
@@ -203,18 +255,19 @@
     .btn-primary { background: var(--navy); color: white; }
     .btn-success { background: var(--success); color: white; }
     .btn-danger { background: var(--error); color: white; }
+    .btn-warning { background: var(--warning); color: white; }
     .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
+
+    /* ── Result / message boxes ── */
+    .result-box { border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; font-size: 14px; line-height: 1.5; }
+    .result-box.success { background: #eafaf1; border: 1px solid #a9dfbf; color: var(--success); }
+    .result-box.error { background: #fdf2f2; border: 1px solid #f5b7b1; color: var(--error); }
+    .result-box.info { background: #eaf1fb; border: 1px solid #aed6f1; color: #1a5276; }
 
     /* ── Spinner ── */
     .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; }
-    .spinner-navy { border: 2px solid rgba(26,58,92,0.2); border-top-color: var(--navy); }
+    .spinner-dark { border: 2px solid rgba(26,58,92,0.15); border-top-color: var(--navy); }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── Searching indicator ── */
-    .searching-indicator {
-      display: flex; align-items: center; gap: 8px;
-      padding: 10px 14px; font-size: 13px; color: var(--text-muted);
-    }
 
     /* ── Toast ── */
     #toast {
@@ -226,6 +279,7 @@
     #toast.show { transform: translateY(0); opacity: 1; }
     #toast.toast-success { border-left: 4px solid var(--success); }
     #toast.toast-error { border-left: 4px solid var(--error); }
+    #toast.toast-warning { border-left: 4px solid var(--warning); }
 
     /* ── Loading ── */
     #loading-overlay {
@@ -236,10 +290,11 @@
     #loading-overlay.hidden { display: none; }
     .loading-spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.2); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
 
-    .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
     .hidden { display: none !important; }
     .mt-12 { margin-top: 12px; }
-    .text-muted { color: var(--text-muted); font-size: 13px; padding: 8px 0; }
+    .text-muted { color: var(--text-muted); font-size: 13px; padding: 6px 0; }
+    .section-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
   </style>
 </head>
 <body>
@@ -277,185 +332,163 @@
 
   <div class="content">
 
-    <!-- ASSIGN -->
-    <div class="page active" id="page-assign">
-      <div class="page-title">Assign Device</div>
-      <div class="page-sub">Type part of the serial number to find the device</div>
-      <div class="card">
-        <div class="card-title">Step 1 — Device</div>
-        <div class="form-group">
-          <label>Serial Number (partial OK)</label>
-          <input type="text" id="assign-serial"
-            placeholder="e.g. EB7D"
-            autocomplete="off" autocorrect="off"
-            autocapitalize="characters" spellcheck="false"
-            inputmode="text"
-            style="font-family:'SF Mono',Monaco,monospace;letter-spacing:1px;font-size:20px;padding:16px 14px;">
-          <div class="serial-hint">Type <strong>4+ characters</strong> — auto-searches as you type</div>
-        </div>
-        <div id="assign-device-searching" class="hidden">
-          <div class="searching-indicator">
-            <div class="spinner spinner-navy"></div>
-            Searching...
-          </div>
-        </div>
-        <div id="assign-device-results" class="hidden mt-12"></div>
-        <div id="assign-device-selected" class="hidden"></div>
-      </div>
-
-      <div class="card hidden" id="assign-student-card">
-        <div class="card-title">Step 2 — Student</div>
-        <div class="form-group">
-          <label>Search Student</label>
-          <input type="text" id="assign-student-search" placeholder="Type student name...">
-        </div>
-        <button class="btn btn-primary" onclick="searchStudents()">🔍 Search</button>
-        <div id="assign-student-results" class="hidden mt-12"></div>
-        <div id="assign-selected-student" class="hidden"></div>
-      </div>
-
-      <div class="card hidden" id="assign-confirm-card">
-        <div class="card-title">Step 3 — Confirm</div>
-        <div class="form-group">
-          <label>Notes (optional)</label>
-          <textarea id="assign-notes" placeholder="Any notes..."></textarea>
-        </div>
-        <button class="btn btn-success" onclick="confirmAssign()">✅ Confirm Assignment</button>
-        <button class="btn btn-outline" onclick="resetAssign()">✕ Cancel</button>
-        <div id="assign-result" class="hidden"></div>
-      </div>
-    </div>
-
-    <!-- RETURN -->
-    <div class="page" id="page-return">
-      <div class="page-title">Return Device</div>
-      <div class="page-sub">Type part of the serial number to find the device</div>
-      <div class="card">
-        <div class="form-group">
-          <label>Serial Number (partial OK)</label>
-          <input type="text" id="return-serial"
-            placeholder="e.g. EB7D"
-            autocomplete="off" autocorrect="off"
-            autocapitalize="characters" spellcheck="false"
-            inputmode="text"
-            style="font-family:'SF Mono',Monaco,monospace;letter-spacing:1px;font-size:20px;padding:16px 14px;">
-          <div class="serial-hint">Type <strong>4+ characters</strong> — auto-searches as you type</div>
-        </div>
-        <div id="return-device-searching" class="hidden">
-          <div class="searching-indicator">
-            <div class="spinner spinner-navy"></div>
-            Searching...
-          </div>
-        </div>
-        <div id="return-device-results" class="hidden mt-12"></div>
-        <div id="return-device-selected" class="hidden"></div>
-        <div id="return-confirm" class="hidden">
-          <div class="divider"></div>
-          <div class="form-group">
-            <label>Return Notes (optional)</label>
-            <textarea id="return-notes" placeholder="Condition notes..."></textarea>
-          </div>
-          <button class="btn btn-success" onclick="confirmReturn()">✅ Confirm Return</button>
-          <button class="btn btn-outline" onclick="resetReturn()">✕ Cancel</button>
-          <div id="return-result" class="hidden"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- DAMAGE -->
-    <div class="page" id="page-damage">
-      <div class="page-title">Log Damage</div>
-      <div class="page-sub">Type part of the serial number to find the device</div>
-      <div class="card">
-        <div class="card-title">Device</div>
-        <div class="form-group">
-          <label>Serial Number (partial OK)</label>
-          <input type="text" id="damage-serial"
-            placeholder="e.g. EB7D"
-            autocomplete="off" autocorrect="off"
-            autocapitalize="characters" spellcheck="false"
-            inputmode="text"
-            style="font-family:'SF Mono',Monaco,monospace;letter-spacing:1px;font-size:20px;padding:16px 14px;">
-          <div class="serial-hint">Type <strong>4+ characters</strong> — auto-searches as you type</div>
-        </div>
-        <div id="damage-device-searching" class="hidden">
-          <div class="searching-indicator">
-            <div class="spinner spinner-navy"></div>
-            Searching...
-          </div>
-        </div>
-        <div id="damage-device-results" class="hidden mt-12"></div>
-        <div id="damage-device-selected" class="hidden"></div>
-      </div>
-
-      <div class="card hidden" id="damage-form-card">
-        <div class="card-title">Damage Items</div>
-        <div class="form-group">
-          <label>Student Email</label>
-          <input type="text" id="damage-student" placeholder="student@warrick.k12.in.us" autocapitalize="none" autocorrect="off">
-        </div>
-        <div id="damage-checklist"></div>
-        <div class="total-bar">
-          <span class="total-bar-label">Selected Total</span>
-          <span class="total-bar-amount" id="damage-total">$0.00</span>
-        </div>
-        <button class="btn btn-danger" onclick="confirmLogDamages()">⚠️ Log Selected Damages</button>
-        <button class="btn btn-outline" onclick="resetDamage()">✕ Cancel</button>
-        <div id="damage-result" class="hidden"></div>
-      </div>
-    </div>
-
-    <!-- LOOKUP -->
-    <div class="page" id="page-lookup">
+    <!-- ══ LOOKUP PAGE (home) ══ -->
+    <div class="page active" id="page-lookup">
       <div class="page-title">Device Lookup</div>
-      <div class="page-sub">Full history for any device</div>
+      <div class="page-sub">Search by serial number or student name</div>
+
+      <!-- Search input -->
       <div class="card">
-        <div class="form-group">
-          <label>Serial Number (partial OK)</label>
-          <input type="text" id="lookup-serial"
-            placeholder="e.g. EB7D"
-            autocomplete="off" autocorrect="off"
-            autocapitalize="characters" spellcheck="false"
-            inputmode="text"
-            style="font-family:'SF Mono',Monaco,monospace;letter-spacing:1px;font-size:20px;padding:16px 14px;">
-          <div class="serial-hint">Type <strong>4+ characters</strong> — auto-searches as you type</div>
+        <div class="search-tabs">
+          <button class="search-tab active" id="tab-serial" onclick="switchSearchTab('serial')">📟 Serial</button>
+          <button class="search-tab" id="tab-user" onclick="switchSearchTab('user')">👤 Student</button>
         </div>
-        <div id="lookup-device-searching" class="hidden">
-          <div class="searching-indicator">
-            <div class="spinner spinner-navy"></div>
+
+        <!-- Serial search -->
+        <div id="search-serial-section">
+          <div class="form-group" style="margin-bottom:6px;">
+            <input type="text" id="search-serial-input"
+              placeholder="Type 4+ characters..."
+              autocomplete="off" autocorrect="off"
+              autocapitalize="characters" spellcheck="false"
+              inputmode="text" class="serial-input">
+          </div>
+          <div class="search-hint">Type partial serial — auto-searches as you type</div>
+        </div>
+
+        <!-- User search -->
+        <div id="search-user-section" class="hidden">
+          <div class="form-group" style="margin-bottom:6px;">
+            <input type="text" id="search-user-input"
+              placeholder="Student name or email..."
+              autocomplete="off" autocorrect="off" autocapitalize="words">
+          </div>
+          <div class="search-hint">Shows all matching students and their assigned devices</div>
+          <button class="btn btn-primary" style="margin-top:10px;margin-bottom:0;" onclick="doUserSearch()">🔍 Search</button>
+        </div>
+
+        <!-- Searching indicator -->
+        <div id="search-searching" class="hidden">
+          <div class="searching-row">
+            <div class="spinner spinner-dark"></div>
             Searching...
           </div>
         </div>
-        <div id="lookup-device-results" class="hidden mt-12"></div>
+
+        <!-- Search results list -->
+        <div id="search-results" class="hidden mt-12"></div>
       </div>
 
-      <div id="lookup-details" class="hidden">
-        <div class="card">
-          <div class="card-title">Device Info</div>
-          <div id="lookup-device-info"></div>
+      <!-- Device detail (shown after selection) -->
+      <div id="device-detail" class="hidden">
+
+        <!-- Device card -->
+        <div class="device-card" id="device-card"></div>
+
+        <!-- Status banner + context actions -->
+        <div id="device-status-banner"></div>
+        <div id="device-actions"></div>
+
+        <!-- Inline panels (shown when action tapped) -->
+        <div id="panel-assign" class="hidden">
+          <div class="inline-panel">
+            <div class="inline-panel-title">Assign Device</div>
+            <div class="form-group">
+              <label>Search Student</label>
+              <input type="text" id="assign-student-search" placeholder="Student name...">
+            </div>
+            <button class="btn btn-primary" style="margin-bottom:8px;" onclick="searchStudentsForAssign()">🔍 Search</button>
+            <div id="assign-student-results" class="hidden"></div>
+            <div id="assign-selected-student" class="hidden"></div>
+            <div id="assign-confirm-section" class="hidden">
+              <div class="form-group">
+                <label>Notes (optional)</label>
+                <textarea id="assign-notes" placeholder="Any notes..."></textarea>
+              </div>
+              <button class="btn btn-success" onclick="confirmAssign()">✅ Confirm Assignment</button>
+              <button class="btn btn-outline" onclick="cancelPanel('panel-assign')">✕ Cancel</button>
+            </div>
+            <div id="assign-result" class="hidden"></div>
+          </div>
         </div>
-        <div class="card">
-          <div class="card-title">Current Assignment</div>
-          <div id="lookup-current-assignment"></div>
+
+        <div id="panel-autoassign" class="hidden">
+          <div class="inline-panel" style="border-left:4px solid var(--warning);">
+            <div class="inline-panel-title" style="color:var(--warning);">⚠️ Confirm Auto-Assignment</div>
+            <div id="autoassign-info" style="font-size:14px;margin-bottom:14px;line-height:1.6;"></div>
+            <div class="form-group">
+              <label>Notes (optional)</label>
+              <textarea id="autoassign-notes" placeholder="Any notes..."></textarea>
+            </div>
+            <button class="btn btn-warning" onclick="confirmAutoAssign()">✅ Confirm Assignment</button>
+            <button class="btn btn-outline" onclick="cancelPanel('panel-autoassign')">✕ Cancel — Assign Someone Else</button>
+            <div id="autoassign-result" class="hidden"></div>
+          </div>
         </div>
-        <div class="card">
-          <div class="card-title">Assignment History</div>
-          <div id="lookup-assignment-history"></div>
+
+        <div id="panel-return" class="hidden">
+          <div class="inline-panel">
+            <div class="inline-panel-title">Return Device</div>
+            <div id="return-assignment-info" style="font-size:14px;margin-bottom:14px;"></div>
+            <div class="form-group">
+              <label>Return Notes (optional)</label>
+              <textarea id="return-notes" placeholder="Condition notes..."></textarea>
+            </div>
+            <button class="btn btn-success" onclick="confirmReturn()">✅ Confirm Return</button>
+            <button class="btn btn-outline" onclick="cancelPanel('panel-return')">✕ Cancel</button>
+            <div id="return-result" class="hidden"></div>
+          </div>
         </div>
-        <div class="card">
-          <div class="card-title">Damage History</div>
-          <div id="lookup-damage-history"></div>
+
+        <div id="panel-damage" class="hidden">
+          <div class="inline-panel">
+            <div class="inline-panel-title">Log Damage</div>
+            <div class="form-group">
+              <label>Student Email</label>
+              <input type="text" id="damage-student" placeholder="student@warrick.k12.in.us" autocapitalize="none" autocorrect="off">
+            </div>
+            <div id="damage-checklist"></div>
+            <div class="total-bar">
+              <span class="total-bar-label">Selected Total</span>
+              <span class="total-bar-amount" id="damage-total">$0.00</span>
+            </div>
+            <button class="btn btn-danger" onclick="confirmLogDamages()">⚠️ Log Selected Damages</button>
+            <button class="btn btn-outline" onclick="cancelPanel('panel-damage')">✕ Cancel</button>
+            <div id="damage-result" class="hidden"></div>
+          </div>
         </div>
+
+        <!-- Damage history -->
+        <div id="damage-history-section" class="hidden">
+          <div class="card">
+            <div class="card-title">Damage History</div>
+            <div id="damage-history-list"></div>
+          </div>
+        </div>
+
+        <!-- Reset button -->
+        <button class="btn btn-outline" onclick="resetLookup()" style="margin-top:4px;">🔍 Search Another Device</button>
+      </div>
+    </div>
+
+    <!-- ══ HISTORY PAGE ══ -->
+    <div class="page" id="page-history">
+      <div class="page-title">Recent Activity</div>
+      <div class="page-sub">Last 20 assignments in this session</div>
+      <div class="card">
+        <div id="history-list"><p class="text-muted">No activity yet this session.</p></div>
       </div>
     </div>
 
   </div>
 
   <div class="bottom-nav">
-    <div class="nav-item active" onclick="showPage('assign')" id="bnav-assign"><span class="nav-icon">🔗</span>Assign</div>
-    <div class="nav-item" onclick="showPage('return')" id="bnav-return"><span class="nav-icon">↩️</span>Return</div>
-    <div class="nav-item" onclick="showPage('damage')" id="bnav-damage"><span class="nav-icon">⚠️</span>Damage</div>
-    <div class="nav-item" onclick="showPage('lookup')" id="bnav-lookup"><span class="nav-icon">🔎</span>Lookup</div>
+    <div class="nav-item active" onclick="showPage('lookup')" id="bnav-lookup">
+      <span class="nav-icon">🔎</span>Lookup
+    </div>
+    <div class="nav-item" onclick="showPage('history')" id="bnav-history">
+      <span class="nav-icon">📋</span>History
+    </div>
   </div>
 </div>
 
@@ -468,22 +501,24 @@
   var accessToken = null;
   var currentUser = null;
   var appData = { feeSchedule: [] };
-  var assignState = { device: null, student: null };
-  var returnState = { device: null, assignment: null };
-  var damageState = { device: null };
-  var studentCache = [];
+  var currentDevice = null;
+  var currentAssignment = null;
+  var currentSuggestedAction = null;
+  var assignStudentCache = [];
   var checkedDamages = {};
   var searchTimers = {};
+  var sessionActivity = [];
+  var currentSearchMode = 'serial';
 
+  // ── Init ─────────────────────────────────────────────────
   window.onload = function() {
-    // Serial field auto-search on input
-    setupSerialField('assign-serial', 'assign');
-    setupSerialField('return-serial', 'return');
-    setupSerialField('damage-serial', 'damage');
-    setupSerialField('lookup-serial', 'lookup');
+    setupSerialInput();
 
+    document.getElementById('search-user-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); doUserSearch(); }
+    });
     document.getElementById('assign-student-search').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') { e.preventDefault(); searchStudents(); }
+      if (e.key === 'Enter') { e.preventDefault(); searchStudentsForAssign(); }
     });
 
     var stored = localStorage.getItem('wcsc_token');
@@ -496,146 +531,470 @@
     }
   };
 
-  // ── Serial Field Auto-Search ──────────────────────────────
-  function setupSerialField(inputId, context) {
-    var input = document.getElementById(inputId);
+  // ── Serial Search Setup ───────────────────────────────────
+  function setupSerialInput() {
+    var input = document.getElementById('search-serial-input');
     input.addEventListener('input', function() {
       var val = input.value.trim().toUpperCase();
       input.value = val;
-
-      // Clear previous timer
-      clearTimeout(searchTimers[context]);
-
-      // Hide previous results
-      document.getElementById(context + '-device-results').classList.add('hidden');
-      document.getElementById(context + '-device-searching').classList.add('hidden');
-
+      clearTimeout(searchTimers.serial);
+      document.getElementById('search-results').classList.add('hidden');
+      document.getElementById('search-searching').classList.add('hidden');
       if (val.length < 4) return;
-
-      // Show searching indicator after brief delay
-      document.getElementById(context + '-device-searching').classList.remove('hidden');
-
-      // Debounce — wait 600ms after last keystroke
-      searchTimers[context] = setTimeout(function() {
-        searchDevices(val, context);
-      }, 600);
+      document.getElementById('search-searching').classList.remove('hidden');
+      searchTimers.serial = setTimeout(function() { doSerialSearch(val); }, 600);
     });
   }
 
-  function searchDevices(query, context) {
-    api('searchDevices', { query: query })
-      .then(function(res) {
-        document.getElementById(context + '-device-searching').classList.add('hidden');
-        var container = document.getElementById(context + '-device-results');
-        container.innerHTML = '';
-
-        if (!res.success) {
-          container.innerHTML = '<p class="text-muted">' + res.error + '</p>';
-          container.classList.remove('hidden'); return;
-        }
-
-        if (!res.devices || res.devices.length === 0) {
-          container.innerHTML = '<p class="text-muted">No devices found matching "' + query + '"</p>';
-          container.classList.remove('hidden'); return;
-        }
-
-        // If exactly one result, auto-select it
-        if (res.devices.length === 1) {
-          selectDevice(context, res.devices[0]);
-          return;
-        }
-
-        // Multiple results — show list
-        res.devices.forEach(function(d, idx) {
-          var btn = document.createElement('button');
-          btn.className = 'device-result-btn'; btn.type = 'button';
-          btn.innerHTML =
-            '<span class="device-result-serial">' + d.serialNumber + '</span>' +
-            '<span class="device-result-sub">' + d.model + ' · ' + d.orgUnit + ' · ' + d.status + '</span>';
-          btn.setAttribute('onclick', 'selectDeviceFromList("' + context + '",' + idx + ')');
-          container.appendChild(btn);
-        });
-
-        // Cache for selection
-        window['deviceCache_' + context] = res.devices;
-        container.classList.remove('hidden');
-      })
-      .catch(function(err) {
-        document.getElementById(context + '-device-searching').classList.add('hidden');
-        showToast('Search error: ' + err.message, 'error');
-      });
-  }
-
-  function selectDeviceFromList(context, idx) {
-    var devices = window['deviceCache_' + context] || [];
-    var device = devices[idx];
-    if (!device) return;
-    document.getElementById(context + '-device-results').classList.add('hidden');
-    selectDevice(context, device);
-  }
-
-  function selectDevice(context, device) {
-    // Update the input to show the full serial
-    document.getElementById(context + '-serial').value = device.serialNumber;
-
-    var selectedEl = document.getElementById(context + '-device-selected');
-    selectedEl.innerHTML =
-      '<div class="result-box info">' +
-      '<strong>' + device.serialNumber + '</strong><br>' +
-      device.model + ' · ' + device.orgUnit +
-      '</div>';
-    selectedEl.classList.remove('hidden');
-
-    if (context === 'assign') {
-      assignState.device = device;
-      document.getElementById('assign-student-card').classList.remove('hidden');
-      setTimeout(function() { document.getElementById('assign-student-search').focus(); }, 300);
-    } else if (context === 'return') {
-      returnState.device = device;
-      loadReturnAssignment(device.serialNumber);
-    } else if (context === 'damage') {
-      damageState.device = device;
-      loadDamageAssignment(device.serialNumber);
-    } else if (context === 'lookup') {
-      loadDeviceHistory(device.serialNumber);
+  function switchSearchTab(mode) {
+    currentSearchMode = mode;
+    document.getElementById('tab-serial').classList.toggle('active', mode === 'serial');
+    document.getElementById('tab-user').classList.toggle('active', mode === 'user');
+    document.getElementById('search-serial-section').classList.toggle('hidden', mode !== 'serial');
+    document.getElementById('search-user-section').classList.toggle('hidden', mode !== 'user');
+    document.getElementById('search-results').classList.add('hidden');
+    document.getElementById('search-searching').classList.add('hidden');
+    if (mode === 'serial') {
+      setTimeout(function() { document.getElementById('search-serial-input').focus(); }, 200);
+    } else {
+      setTimeout(function() { document.getElementById('search-user-input').focus(); }, 200);
     }
   }
 
-  function loadReturnAssignment(serial) {
-    api('getDeviceAssignment', { serialNumber: serial })
+  // ── Serial Search ────────────────────────────────────────
+  function doSerialSearch(query) {
+    api('searchDevices', { query: query })
       .then(function(res) {
-        returnState.assignment = res.assignment;
-        var selectedEl = document.getElementById('return-device-selected');
-        if (!res.assignment) {
-          selectedEl.innerHTML = '<div class="result-box error">No active assignment for this device.</div>';
-          document.getElementById('return-confirm').classList.add('hidden');
-        } else {
-          selectedEl.innerHTML =
-            '<div class="result-box info">' +
-            '<strong>' + serial + '</strong><br>' +
-            'Assigned to <strong>' + res.assignment.StudentEmail + '</strong><br>' +
-            'Since ' + new Date(res.assignment.AssignedDate).toLocaleDateString() +
-            '</div>';
-          document.getElementById('return-confirm').classList.remove('hidden');
-        }
-        selectedEl.classList.remove('hidden');
+        document.getElementById('search-searching').classList.add('hidden');
+        var container = document.getElementById('search-results');
+        container.innerHTML = '';
+        if (!res.success) { container.innerHTML = '<p class="text-muted">' + res.error + '</p>'; container.classList.remove('hidden'); return; }
+        if (!res.devices || res.devices.length === 0) { container.innerHTML = '<p class="text-muted">No devices found matching "' + query + '"</p>'; container.classList.remove('hidden'); return; }
+        if (res.devices.length === 1) { loadDeviceDetail(res.devices[0].serialNumber); return; }
+        window._deviceSearchCache = res.devices;
+        res.devices.forEach(function(d, idx) {
+          var btn = document.createElement('button');
+          btn.className = 'result-btn'; btn.type = 'button';
+          btn.innerHTML = '<span class="result-btn-primary">' + d.serialNumber + '</span><span class="result-btn-sub">' + d.model + ' · ' + d.orgUnit + ' · ' + d.status + '</span>';
+          btn.setAttribute('onclick', 'loadDeviceDetailFromCache(' + idx + ')');
+          container.appendChild(btn);
+        });
+        container.classList.remove('hidden');
       })
-      .catch(function(err) { showToast(err.message, 'error'); });
+      .catch(function(err) { document.getElementById('search-searching').classList.add('hidden'); showToast(err.message, 'error'); });
   }
 
-  function loadDamageAssignment(serial) {
-    api('getDeviceAssignment', { serialNumber: serial })
-      .then(function(res) {
-        if (res.assignment) {
-          document.getElementById('damage-student').value = res.assignment.StudentEmail;
-        }
-        buildDamageChecklist();
-        document.getElementById('damage-form-card').classList.remove('hidden');
-      })
-      .catch(function(err) { showToast(err.message, 'error'); });
+  function loadDeviceDetailFromCache(idx) {
+    var devices = window._deviceSearchCache || [];
+    if (devices[idx]) loadDeviceDetail(devices[idx].serialNumber);
   }
 
-  // ── Google Sign In ────────────────────────────────────────
+  // ── User Search ──────────────────────────────────────────
+  function doUserSearch() {
+    var query = document.getElementById('search-user-input').value.trim();
+    if (query.length < 2) { showToast('Enter at least 2 characters', 'error'); return; }
+    document.getElementById('search-searching').classList.remove('hidden');
+    document.getElementById('search-results').classList.add('hidden');
+
+    api('searchByUser', { query: query })
+      .then(function(res) {
+        document.getElementById('search-searching').classList.add('hidden');
+        var container = document.getElementById('search-results');
+        container.innerHTML = '';
+        if (!res.success) { container.innerHTML = '<p class="text-muted">' + res.error + '</p>'; container.classList.remove('hidden'); return; }
+        if (!res.results || res.results.length === 0) { container.innerHTML = '<p class="text-muted">No students found.</p>'; container.classList.remove('hidden'); return; }
+
+        res.results.forEach(function(r, idx) {
+          var student = r.student;
+          var assignments = r.assignments || [];
+          var btn = document.createElement('button');
+          btn.className = 'result-btn'; btn.type = 'button';
+          var assignedSerial = assignments.length > 0 ? assignments[0].SerialNumber : null;
+          var subText = student.email;
+          if (assignedSerial) subText += ' · Device: ' + assignedSerial;
+          else subText += ' · No device assigned';
+          btn.innerHTML = '<span class="result-btn-primary" style="font-family:inherit;letter-spacing:0;">' + student.fullName + '</span><span class="result-btn-sub">' + subText + '</span>';
+          if (assignedSerial) {
+            btn.setAttribute('onclick', 'loadDeviceDetail("' + assignedSerial + '")');
+          } else {
+            // No device — store student and go to assign flow
+            window._userSearchCache = window._userSearchCache || {};
+            window._userSearchCache[idx] = student;
+            btn.setAttribute('onclick', 'showAssignForUser(' + idx + ')');
+          }
+          container.appendChild(btn);
+        });
+        container.classList.remove('hidden');
+      })
+      .catch(function(err) { document.getElementById('search-searching').classList.add('hidden'); showToast(err.message, 'error'); });
+  }
+
+  function showAssignForUser(idx) {
+    var student = (window._userSearchCache || {})[idx];
+    if (!student) return;
+    // Show a message that no device is assigned and let them search for one
+    showToast(student.fullName + ' has no assigned device', 'warning');
+  }
+
+  // ── Load Device Detail ────────────────────────────────────
+  function loadDeviceDetail(serialNumber) {
+    document.getElementById('search-results').classList.add('hidden');
+    document.getElementById('search-searching').classList.remove('hidden');
+
+    api('lookupDevice', { serialNumber: serialNumber })
+      .then(function(res) {
+        document.getElementById('search-searching').classList.add('hidden');
+        if (!res.success) { showToast(res.error, 'error'); return; }
+        renderDeviceDetail(res);
+        document.getElementById('device-detail').classList.remove('hidden');
+        document.querySelector('.content').scrollTop = 0;
+      })
+      .catch(function(err) { document.getElementById('search-searching').classList.add('hidden'); showToast(err.message, 'error'); });
+  }
+
+  function renderDeviceDetail(res) {
+    currentDevice = res.device;
+    currentAssignment = res.activeAssignment;
+    currentSuggestedAction = res.suggestedAction;
+
+    // Hide all panels
+    ['panel-assign','panel-autoassign','panel-return','panel-damage'].forEach(function(id) {
+      document.getElementById(id).classList.add('hidden');
+    });
+    ['assign-result','autoassign-result','return-result','damage-result'].forEach(function(id) {
+      document.getElementById(id).classList.add('hidden');
+    });
+
+    // Device card
+    var d = currentDevice;
+    document.getElementById('device-card').innerHTML =
+      '<div class="device-card-serial">' + d.serialNumber + '</div>' +
+      '<div class="device-card-model">' + d.model + '</div>' +
+      '<div class="device-card-grid">' +
+        field('Org Unit', d.orgUnit) +
+        field('Status', d.status) +
+        field('Location', d.annotatedLocation || '—') +
+        field('Asset ID', d.annotatedAssetId || '—') +
+        field('Last User', d.annotatedUser || '—') +
+        field('Recent User', d.recentUser || '—') +
+        field('OS Version', d.osVersion || '—') +
+        field('Last Sync', d.lastSync ? new Date(d.lastSync).toLocaleDateString() : '—') +
+      '</div>';
+
+    // Status banner + actions
+    var bannerEl = document.getElementById('device-status-banner');
+    var actionsEl = document.getElementById('device-actions');
+
+    if (res.suggestedAction === 'assigned' && currentAssignment) {
+      bannerEl.innerHTML =
+        '<div class="status-banner assigned">' +
+        '✅ Currently Assigned' +
+        '<div class="status-banner-sub">To: <strong>' + currentAssignment.StudentEmail + '</strong> since ' + new Date(currentAssignment.AssignedDate).toLocaleDateString() + '</div>' +
+        '</div>';
+      actionsEl.innerHTML =
+        '<div class="action-grid">' +
+        '<button class="action-btn danger" onclick="openPanel(\'panel-return\')">' +
+          '<span class="action-btn-icon">↩️</span>Return' +
+        '</button>' +
+        '<button class="action-btn warning" onclick="openPanel(\'panel-damage\')">' +
+          '<span class="action-btn-icon">⚠️</span>Log Damage' +
+        '</button>' +
+        '</div>';
+      // Pre-fill damage student email
+      document.getElementById('damage-student').value = currentAssignment.StudentEmail;
+
+    } else if (res.suggestedAction === 'suggest_assign') {
+      bannerEl.innerHTML =
+        '<div class="status-banner suggest">' +
+        '🔔 Unassigned — Last User Found' +
+        '<div class="status-banner-sub">Last user: <strong>' + d.recentUser + '</strong></div>' +
+        '</div>';
+
+      // Pre-fill autoassign info
+      document.getElementById('autoassign-info').innerHTML =
+        'The last user of this device was:<br>' +
+        '<strong>' + d.recentUser + '</strong><br><br>' +
+        'Would you like to assign this device to them? If they repaired it or it was used by staff, tap Cancel to assign to someone else instead.';
+
+      actionsEl.innerHTML =
+        '<div class="action-grid">' +
+        '<button class="action-btn success action-btn-full" onclick="openPanel(\'panel-autoassign\')">' +
+          '<span class="action-btn-icon">✅</span>Assign to Last User' +
+        '</button>' +
+        '<button class="action-btn outline action-btn-full" onclick="openPanel(\'panel-assign\')" style="margin-top:0;">' +
+          '<span class="action-btn-icon">🔍</span>Assign to Different Student' +
+        '</button>' +
+        '</div>';
+
+    } else {
+      bannerEl.innerHTML =
+        '<div class="status-banner unassigned">' +
+        '❌ Unassigned' +
+        '<div class="status-banner-sub">No active assignment — assign to a student below</div>' +
+        '</div>';
+      actionsEl.innerHTML =
+        '<button class="action-btn primary action-btn-full" style="padding:14px;border-radius:10px;margin-bottom:16px;" onclick="openPanel(\'panel-assign\')">' +
+          '🔗 Assign to Student' +
+        '</button>';
+    }
+
+    // Build damage checklist
+    buildDamageChecklist();
+
+    // Damage history
+    if (res.damages && res.damages.length > 0) {
+      var histHtml = res.damages.slice(0, 10).map(function(d) {
+        return '<div class="damage-history-item">' +
+          '<div class="damage-history-title">' + d.DamageType + ' — $' + parseFloat(d.Fee).toFixed(2) +
+          ' <span class="badge badge-' + (d.BillStatus === 'Paid' ? 'paid' : d.BillStatus === 'Unpaid' ? 'unpaid' : 'unbilled') + '">' + d.BillStatus + '</span></div>' +
+          '<div class="damage-history-sub">' + new Date(d.DamageDate).toLocaleDateString() +
+          (d.StudentEmail ? ' · ' + d.StudentEmail : '') + '</div>' +
+          '</div>';
+      }).join('');
+      document.getElementById('damage-history-list').innerHTML = histHtml;
+      document.getElementById('damage-history-section').classList.remove('hidden');
+    } else {
+      document.getElementById('damage-history-section').classList.add('hidden');
+    }
+  }
+
+  function field(label, value) {
+    return '<div class="device-card-field">' +
+      '<div class="device-card-label">' + label + '</div>' +
+      '<div class="device-card-value">' + (value || '—') + '</div>' +
+      '</div>';
+  }
+
+  function openPanel(panelId) {
+    // Close other panels first
+    ['panel-assign','panel-autoassign','panel-return','panel-damage'].forEach(function(id) {
+      if (id !== panelId) document.getElementById(id).classList.add('hidden');
+    });
+    document.getElementById(panelId).classList.remove('hidden');
+    // Scroll to panel
+    setTimeout(function() {
+      var el = document.getElementById(panelId);
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+
+    if (panelId === 'panel-return' && currentAssignment) {
+      document.getElementById('return-assignment-info').innerHTML =
+        'Returning device from <strong>' + currentAssignment.StudentEmail + '</strong>';
+    }
+  }
+
+  function cancelPanel(panelId) {
+    document.getElementById(panelId).classList.add('hidden');
+  }
+
+  // ── Student Search (for assign panel) ────────────────────
+  function searchStudentsForAssign() {
+    var query = document.getElementById('assign-student-search').value.trim();
+    if (query.length < 2) { showToast('Enter at least 2 characters', 'error'); return; }
+    api('searchStudents', { query: query })
+      .then(function(res) {
+        var container = document.getElementById('assign-student-results');
+        container.innerHTML = '';
+        if (!res.success || !res.students || res.students.length === 0) {
+          container.innerHTML = '<p class="text-muted">No students found.</p>';
+          container.classList.remove('hidden'); return;
+        }
+        assignStudentCache = res.students;
+        res.students.forEach(function(s, idx) {
+          var btn = document.createElement('button');
+          btn.className = 'student-result-btn'; btn.type = 'button';
+          btn.innerHTML = '<span class="student-result-name">' + s.fullName + '</span><span class="student-result-sub">' + s.email + (s.studentId ? ' · ID: ' + s.studentId : '') + '</span>';
+          btn.setAttribute('onclick', 'selectAssignStudent(' + idx + ')');
+          container.appendChild(btn);
+        });
+        container.classList.remove('hidden');
+      })
+      .catch(function(err) { showToast('Search error: ' + err.message, 'error'); });
+  }
+
+  function selectAssignStudent(idx) {
+    var student = assignStudentCache[idx];
+    if (!student) return;
+    document.getElementById('assign-student-results').classList.add('hidden');
+    window._selectedAssignStudent = student;
+    document.getElementById('assign-selected-student').innerHTML =
+      '<div class="info-panel">' +
+      '<div class="info-row"><span class="info-label">Name</span><span class="info-val">' + student.fullName + '</span></div>' +
+      '<div class="info-row"><span class="info-label">Email</span><span class="info-val">' + student.email + '</span></div>' +
+      (student.studentId ? '<div class="info-row"><span class="info-label">Student ID</span><span class="info-val"><strong>' + student.studentId + '</strong></span></div>' : '') +
+      '</div>';
+    document.getElementById('assign-selected-student').classList.remove('hidden');
+    document.getElementById('assign-confirm-section').classList.remove('hidden');
+  }
+
+  // ── Assign ───────────────────────────────────────────────
+  function confirmAssign() {
+    var student = window._selectedAssignStudent;
+    if (!student || !currentDevice) return;
+    var notes = document.getElementById('assign-notes').value;
+    var btn = event.target; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Assigning...';
+    api('assignDevice', { serialNumber: currentDevice.serialNumber, deviceId: currentDevice.deviceId, studentEmail: student.email, notes: notes })
+      .then(function(res) {
+        btn.disabled = false; btn.innerHTML = '✅ Confirm Assignment';
+        var el = document.getElementById('assign-result'); el.classList.remove('hidden');
+        if (res.success) {
+          el.className = 'result-box success'; el.textContent = '✅ Assigned to ' + student.fullName;
+          showToast('Device assigned!', 'success');
+          logActivity('Assigned ' + currentDevice.serialNumber + ' → ' + student.email);
+          setTimeout(function() { loadDeviceDetail(currentDevice.serialNumber); }, 2000);
+        } else { el.className = 'result-box error'; el.textContent = res.error; }
+      })
+      .catch(function(err) { btn.disabled = false; btn.innerHTML = '✅ Confirm Assignment'; showToast(err.message, 'error'); });
+  }
+
+  // ── Auto-assign confirm ───────────────────────────────────
+  function confirmAutoAssign() {
+    if (!currentDevice) return;
+    var userEmail = currentDevice.recentUser;
+    var notes = document.getElementById('autoassign-notes').value;
+    var btn = event.target; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Assigning...';
+    api('confirmAutoAssign', { serialNumber: currentDevice.serialNumber, deviceId: currentDevice.deviceId, userEmail: userEmail, notes: notes })
+      .then(function(res) {
+        btn.disabled = false; btn.innerHTML = '✅ Confirm Assignment';
+        var el = document.getElementById('autoassign-result'); el.classList.remove('hidden');
+        if (res.success) {
+          el.className = 'result-box success'; el.textContent = '✅ Auto-assigned to ' + userEmail;
+          showToast('Device assigned!', 'success');
+          logActivity('Auto-assigned ' + currentDevice.serialNumber + ' → ' + userEmail);
+          setTimeout(function() { loadDeviceDetail(currentDevice.serialNumber); }, 2000);
+        } else { el.className = 'result-box error'; el.textContent = res.error; }
+      })
+      .catch(function(err) { btn.disabled = false; btn.innerHTML = '✅ Confirm Assignment'; showToast(err.message, 'error'); });
+  }
+
+  // ── Return ───────────────────────────────────────────────
+  function confirmReturn() {
+    if (!currentDevice) return;
+    var notes = document.getElementById('return-notes').value;
+    var btn = event.target; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Processing...';
+    api('returnDevice', { serialNumber: currentDevice.serialNumber, notes: notes })
+      .then(function(res) {
+        btn.disabled = false; btn.innerHTML = '✅ Confirm Return';
+        var el = document.getElementById('return-result'); el.classList.remove('hidden');
+        if (res.success) {
+          el.className = 'result-box success'; el.textContent = '✅ Device returned successfully!';
+          showToast('Device checked in!', 'success');
+          logActivity('Returned ' + currentDevice.serialNumber);
+          setTimeout(function() { loadDeviceDetail(currentDevice.serialNumber); }, 2000);
+        } else { el.className = 'result-box error'; el.textContent = res.error; }
+      })
+      .catch(function(err) { btn.disabled = false; btn.innerHTML = '✅ Confirm Return'; showToast(err.message, 'error'); });
+  }
+
+  // ── Damage ───────────────────────────────────────────────
+  function buildDamageChecklist() {
+    checkedDamages = {};
+    var fees = appData.feeSchedule || [];
+    var list = document.getElementById('damage-checklist');
+    list.innerHTML = '';
+    fees.forEach(function(f, idx) {
+      var item = document.createElement('div');
+      item.className = 'damage-check-item'; item.id = 'dmg-' + idx;
+      item.setAttribute('onclick', 'toggleDamage(' + idx + ')');
+      item.innerHTML =
+        '<div class="damage-check-box" id="dmg-box-' + idx + '"></div>' +
+        '<div class="damage-check-info">' +
+          '<div class="damage-check-name">' + f.DamageType + '</div>' +
+          '<div class="damage-check-fee">$' + parseFloat(f.Fee).toFixed(2) + '</div>' +
+        '</div>';
+      list.appendChild(item);
+    });
+    document.getElementById('damage-total').textContent = '$0.00';
+  }
+
+  function toggleDamage(idx) {
+    var fees = appData.feeSchedule || [];
+    if (checkedDamages[idx]) {
+      delete checkedDamages[idx];
+      document.getElementById('dmg-' + idx).classList.remove('checked');
+      document.getElementById('dmg-box-' + idx).textContent = '';
+    } else {
+      checkedDamages[idx] = { damageType: fees[idx].DamageType, fee: parseFloat(fees[idx].Fee) || 0, description: '' };
+      document.getElementById('dmg-' + idx).classList.add('checked');
+      document.getElementById('dmg-box-' + idx).textContent = '✓';
+    }
+    var total = Object.values(checkedDamages).reduce(function(s,d) { return s+(d.fee||0); }, 0);
+    document.getElementById('damage-total').textContent = '$' + total.toFixed(2);
+  }
+
+  function confirmLogDamages() {
+    if (!currentDevice) return;
+    var studentEmail = document.getElementById('damage-student').value.trim();
+    if (!studentEmail) { showToast('Student email is required', 'error'); return; }
+    var damageItems = Object.values(checkedDamages);
+    if (damageItems.length === 0) { showToast('Select at least one damage type', 'error'); return; }
+    var btn = event.target; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Logging...';
+    api('logDamages', { serialNumber: currentDevice.serialNumber, studentEmail: studentEmail, damageItems: damageItems })
+      .then(function(res) {
+        btn.disabled = false; btn.innerHTML = '⚠️ Log Selected Damages';
+        var el = document.getElementById('damage-result'); el.classList.remove('hidden');
+        if (res.success) {
+          el.className = 'result-box success'; el.textContent = '✅ ' + res.count + ' damage(s) logged.';
+          showToast(res.count + ' damage(s) logged!', 'success');
+          logActivity('Logged ' + res.count + ' damage(s) on ' + currentDevice.serialNumber);
+          setTimeout(function() { loadDeviceDetail(currentDevice.serialNumber); }, 2000);
+        } else { el.className = 'result-box error'; el.textContent = res.error; }
+      })
+      .catch(function(err) { btn.disabled = false; btn.innerHTML = '⚠️ Log Selected Damages'; showToast(err.message, 'error'); });
+  }
+
+  // ── Reset Lookup ──────────────────────────────────────────
+  function resetLookup() {
+    currentDevice = null; currentAssignment = null;
+    document.getElementById('device-detail').classList.add('hidden');
+    document.getElementById('search-results').classList.add('hidden');
+    document.getElementById('search-serial-input').value = '';
+    document.getElementById('search-user-input').value = '';
+    ['panel-assign','panel-autoassign','panel-return','panel-damage'].forEach(function(id) {
+      document.getElementById(id).classList.add('hidden');
+    });
+    document.querySelector('.content').scrollTop = 0;
+    setTimeout(function() {
+      if (currentSearchMode === 'serial') document.getElementById('search-serial-input').focus();
+      else document.getElementById('search-user-input').focus();
+    }, 300);
+  }
+
+  // ── Session Activity Log ──────────────────────────────────
+  function logActivity(msg) {
+    sessionActivity.unshift({ msg: msg, time: new Date().toLocaleTimeString() });
+    if (sessionActivity.length > 20) sessionActivity.pop();
+    renderHistory();
+  }
+
+  function renderHistory() {
+    var list = document.getElementById('history-list');
+    if (sessionActivity.length === 0) {
+      list.innerHTML = '<p class="text-muted">No activity yet this session.</p>';
+      return;
+    }
+    list.innerHTML = sessionActivity.map(function(a) {
+      return '<div style="padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;">' +
+        '<div style="font-weight:600;">' + a.msg + '</div>' +
+        '<div style="font-size:12px;color:var(--text-muted);margin-top:2px;">' + a.time + '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  // ── Navigation ───────────────────────────────────────────
+  function showPage(page) {
+    document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+    document.getElementById('page-' + page).classList.add('active');
+    document.getElementById('bnav-' + page).classList.add('active');
+    document.querySelector('.content').scrollTop = 0;
+    if (page === 'history') renderHistory();
+    if (page === 'lookup') setTimeout(function() {
+      if (currentSearchMode === 'serial') document.getElementById('search-serial-input').focus();
+    }, 300);
+  }
+
+  // ── Auth ─────────────────────────────────────────────────
   function signIn() {
     var client = google.accounts.oauth2.initTokenClient({
       client_id: GOOGLE_CLIENT_ID,
@@ -681,7 +1040,8 @@
         document.getElementById('header-user').textContent = data.user || currentUser;
         document.getElementById('loading-overlay').classList.add('hidden');
         document.getElementById('app').classList.add('visible');
-        showPage('assign');
+        showPage('lookup');
+        setTimeout(function() { document.getElementById('search-serial-input').focus(); }, 400);
       })
       .catch(function(err) {
         document.getElementById('loading-overlay').classList.add('hidden');
@@ -693,252 +1053,9 @@
   function api(action, params) {
     if (!APPS_SCRIPT_URL) return Promise.reject(new Error('Apps Script URL not configured.'));
     return fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
+      method: 'POST', headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify({ token: accessToken, action: action, params: params })
     }).then(function(r) { return r.json(); });
-  }
-
-  // ── Navigation ───────────────────────────────────────────
-  function showPage(page) {
-    document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
-    document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
-    var pageEl = document.getElementById('page-' + page);
-    var bnavEl = document.getElementById('bnav-' + page);
-    if (pageEl) pageEl.classList.add('active');
-    if (bnavEl) bnavEl.classList.add('active');
-    document.querySelector('.content').scrollTop = 0;
-    if (page === 'assign') { resetAssign(); setTimeout(function() { document.getElementById('assign-serial').focus(); }, 300); }
-    if (page === 'return') { resetReturn(); setTimeout(function() { document.getElementById('return-serial').focus(); }, 300); }
-    if (page === 'damage') { resetDamage(); setTimeout(function() { document.getElementById('damage-serial').focus(); }, 300); }
-    if (page === 'lookup') { resetLookup(); setTimeout(function() { document.getElementById('lookup-serial').focus(); }, 300); }
-  }
-
-  // ── Student Search ───────────────────────────────────────
-  function searchStudents() {
-    var query = document.getElementById('assign-student-search').value.trim();
-    if (query.length < 2) { showToast('Enter at least 2 characters', 'error'); return; }
-    api('searchStudents', { query: query })
-      .then(function(res) {
-        var container = document.getElementById('assign-student-results');
-        container.innerHTML = '';
-        if (!res.success || !res.students || res.students.length === 0) {
-          container.innerHTML = '<p class="text-muted">No students found.</p>';
-          container.classList.remove('hidden'); return;
-        }
-        studentCache = res.students;
-        res.students.forEach(function(s, idx) {
-          var btn = document.createElement('button');
-          btn.className = 'student-result-btn'; btn.type = 'button';
-          btn.innerHTML = '<span class="student-result-name">' + s.fullName + '</span><span class="student-result-sub">' + s.email + (s.studentId ? ' · ID: ' + s.studentId : '') + '</span>';
-          btn.setAttribute('onclick', 'selectStudent(' + idx + ')');
-          container.appendChild(btn);
-        });
-        container.classList.remove('hidden');
-      })
-      .catch(function(err) { showToast('Search error: ' + err.message, 'error'); });
-  }
-
-  function selectStudent(idx) {
-    var student = studentCache[idx];
-    if (!student) return;
-    document.getElementById('assign-student-results').classList.add('hidden');
-    assignState.student = student;
-    document.getElementById('assign-selected-student').innerHTML =
-      '<div class="info-panel">' +
-      '<div class="info-row"><span class="info-label">Name</span><span class="info-val">' + student.fullName + '</span></div>' +
-      '<div class="info-row"><span class="info-label">Email</span><span class="info-val">' + student.email + '</span></div>' +
-      (student.studentId ? '<div class="info-row"><span class="info-label">Student ID</span><span class="info-val"><strong>' + student.studentId + '</strong></span></div>' : '') +
-      '</div>';
-    document.getElementById('assign-selected-student').classList.remove('hidden');
-    document.getElementById('assign-confirm-card').classList.remove('hidden');
-  }
-
-  // ── Assign ───────────────────────────────────────────────
-  function confirmAssign() {
-    if (!assignState.device || !assignState.student) return;
-    var notes = document.getElementById('assign-notes').value;
-    var btn = event.target; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Assigning...';
-    api('assignDevice', { serialNumber: assignState.device.serialNumber, studentEmail: assignState.student.email, notes: notes })
-      .then(function(res) {
-        btn.disabled = false; btn.innerHTML = '✅ Confirm Assignment';
-        var el = document.getElementById('assign-result'); el.classList.remove('hidden');
-        if (res.success) {
-          el.className = 'result-box success'; el.textContent = '✅ Assigned to ' + assignState.student.fullName;
-          showToast('Device assigned!', 'success'); setTimeout(resetAssign, 2500);
-        } else { el.className = 'result-box error'; el.textContent = res.error; }
-      })
-      .catch(function(err) { btn.disabled = false; btn.innerHTML = '✅ Confirm Assignment'; showToast(err.message, 'error'); });
-  }
-
-  function resetAssign() {
-    assignState = { device: null, student: null };
-    document.getElementById('assign-serial').value = '';
-    document.getElementById('assign-student-search').value = '';
-    document.getElementById('assign-notes').value = '';
-    ['assign-device-results','assign-device-selected','assign-device-searching',
-     'assign-student-results','assign-selected-student','assign-result'].forEach(function(id) {
-      document.getElementById(id).classList.add('hidden');
-    });
-    ['assign-student-card','assign-confirm-card'].forEach(function(id) {
-      document.getElementById(id).classList.add('hidden');
-    });
-  }
-
-  // ── Return ───────────────────────────────────────────────
-  function confirmReturn() {
-    var notes = document.getElementById('return-notes').value;
-    var serial = returnState.device ? returnState.device.serialNumber : '';
-    var btn = event.target; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Processing...';
-    api('returnDevice', { serialNumber: serial, notes: notes })
-      .then(function(res) {
-        btn.disabled = false; btn.innerHTML = '✅ Confirm Return';
-        var el = document.getElementById('return-result'); el.classList.remove('hidden');
-        if (res.success) {
-          el.className = 'result-box success'; el.textContent = '✅ Device returned successfully!';
-          showToast('Device checked in!', 'success'); setTimeout(resetReturn, 2500);
-        } else { el.className = 'result-box error'; el.textContent = res.error; }
-      })
-      .catch(function(err) { btn.disabled = false; btn.innerHTML = '✅ Confirm Return'; showToast(err.message, 'error'); });
-  }
-
-  function resetReturn() {
-    returnState = { device: null, assignment: null };
-    document.getElementById('return-serial').value = '';
-    document.getElementById('return-notes').value = '';
-    ['return-device-results','return-device-selected','return-device-searching','return-result'].forEach(function(id) {
-      document.getElementById(id).classList.add('hidden');
-    });
-    document.getElementById('return-confirm').classList.add('hidden');
-  }
-
-  // ── Damage ───────────────────────────────────────────────
-  function buildDamageChecklist() {
-    checkedDamages = {};
-    var fees = appData.feeSchedule || [];
-    var list = document.getElementById('damage-checklist');
-    list.innerHTML = '';
-    fees.forEach(function(f, idx) {
-      var item = document.createElement('div');
-      item.className = 'damage-check-item'; item.id = 'dmg-' + idx;
-      item.setAttribute('onclick', 'toggleDamage(' + idx + ')');
-      item.innerHTML =
-        '<div class="damage-check-box" id="dmg-box-' + idx + '"></div>' +
-        '<div class="damage-check-info">' +
-          '<div class="damage-check-name">' + f.DamageType + '</div>' +
-          '<div class="damage-check-fee">$' + parseFloat(f.Fee).toFixed(2) + '</div>' +
-        '</div>';
-      list.appendChild(item);
-    });
-    updateDamageTotal();
-  }
-
-  function toggleDamage(idx) {
-    var fees = appData.feeSchedule || [];
-    if (checkedDamages[idx]) {
-      delete checkedDamages[idx];
-      document.getElementById('dmg-' + idx).classList.remove('checked');
-      document.getElementById('dmg-box-' + idx).textContent = '';
-    } else {
-      checkedDamages[idx] = { damageType: fees[idx].DamageType, fee: parseFloat(fees[idx].Fee) || 0, description: '' };
-      document.getElementById('dmg-' + idx).classList.add('checked');
-      document.getElementById('dmg-box-' + idx).textContent = '✓';
-    }
-    updateDamageTotal();
-  }
-
-  function updateDamageTotal() {
-    var total = Object.values(checkedDamages).reduce(function(sum, d) { return sum + (d.fee || 0); }, 0);
-    document.getElementById('damage-total').textContent = '$' + total.toFixed(2);
-  }
-
-  function confirmLogDamages() {
-    var serial = damageState.device ? damageState.device.serialNumber : '';
-    var studentEmail = document.getElementById('damage-student').value.trim();
-    if (!studentEmail) { showToast('Student email is required', 'error'); return; }
-    var damageItems = Object.values(checkedDamages);
-    if (damageItems.length === 0) { showToast('Select at least one damage type', 'error'); return; }
-    var btn = event.target; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Logging...';
-    api('logDamages', { serialNumber: serial, studentEmail: studentEmail, damageItems: damageItems })
-      .then(function(res) {
-        btn.disabled = false; btn.innerHTML = '⚠️ Log Selected Damages';
-        var el = document.getElementById('damage-result'); el.classList.remove('hidden');
-        if (res.success) {
-          el.className = 'result-box success'; el.textContent = '✅ ' + res.count + ' damage(s) logged.';
-          showToast(res.count + ' damage(s) logged!', 'success'); setTimeout(resetDamage, 2500);
-        } else { el.className = 'result-box error'; el.textContent = res.error; }
-      })
-      .catch(function(err) { btn.disabled = false; btn.innerHTML = '⚠️ Log Selected Damages'; showToast(err.message, 'error'); });
-  }
-
-  function resetDamage() {
-    damageState = { device: null }; checkedDamages = {};
-    document.getElementById('damage-serial').value = '';
-    document.getElementById('damage-student').value = '';
-    document.getElementById('damage-checklist').innerHTML = '';
-    document.getElementById('damage-total').textContent = '$0.00';
-    ['damage-device-results','damage-device-selected','damage-device-searching','damage-result'].forEach(function(id) {
-      document.getElementById(id).classList.add('hidden');
-    });
-    document.getElementById('damage-form-card').classList.add('hidden');
-  }
-
-  // ── Device Lookup ─────────────────────────────────────────
-  function loadDeviceHistory(serial) {
-    document.getElementById('lookup-details').classList.add('hidden');
-    api('getDeviceHistory', { serialNumber: serial })
-      .then(function(res) {
-        if (!res.success) { showToast(res.error, 'error'); return; }
-        renderDeviceHistory(res);
-        document.getElementById('lookup-details').classList.remove('hidden');
-      })
-      .catch(function(err) { showToast(err.message, 'error'); });
-  }
-
-  function renderDeviceHistory(res) {
-    var d = res.device;
-    document.getElementById('lookup-device-info').innerHTML =
-      '<div class="info-row"><span class="info-label">Serial</span><span class="info-val"><strong>' + d.serialNumber + '</strong></span></div>' +
-      '<div class="info-row"><span class="info-label">Model</span><span class="info-val">' + d.model + '</span></div>' +
-      '<div class="info-row"><span class="info-label">Org Unit</span><span class="info-val">' + d.orgUnit + '</span></div>' +
-      '<div class="info-row"><span class="info-label">Status</span><span class="info-val">' + d.status + '</span></div>' +
-      '<div class="info-row"><span class="info-label">Last Sync</span><span class="info-val">' + (d.lastSync ? new Date(d.lastSync).toLocaleDateString() : '—') + '</span></div>';
-
-    var ca = res.currentAssignment;
-    var caEl = document.getElementById('lookup-current-assignment');
-    if (ca) {
-      caEl.innerHTML = '<div class="result-box info" style="margin-top:0;">' +
-        '<div class="info-row"><span class="info-label">Student</span><span class="info-val"><strong>' + ca.StudentEmail + '</strong></span></div>' +
-        '<div class="info-row"><span class="info-label">Since</span><span class="info-val">' + new Date(ca.AssignedDate).toLocaleDateString() + '</span></div>' +
-        '<div class="info-row"><span class="info-label">By</span><span class="info-val">' + ca.AssignedBy + '</span></div></div>';
-    } else { caEl.innerHTML = '<p class="text-muted">No active assignment.</p>'; }
-
-    document.getElementById('lookup-assignment-history').innerHTML = res.assignments.length
-      ? res.assignments.map(function(a) {
-          return '<div class="history-item"><div class="history-item-title">' + a.StudentEmail +
-            ' <span class="badge badge-' + a.Status.toLowerCase() + '">' + a.Status + '</span></div>' +
-            '<div class="history-item-sub">Assigned: ' + new Date(a.AssignedDate).toLocaleDateString() +
-            (a.ReturnedDate ? ' · Returned: ' + new Date(a.ReturnedDate).toLocaleDateString() : '') + '</div></div>';
-        }).join('')
-      : '<p class="text-muted">No assignment history.</p>';
-
-    document.getElementById('lookup-damage-history').innerHTML = res.damages.length
-      ? res.damages.map(function(d) {
-          return '<div class="history-item"><div class="history-item-title">' + d.DamageType +
-            ' — $' + parseFloat(d.Fee).toFixed(2) +
-            ' <span class="badge badge-' + (d.BillStatus === 'Paid' ? 'paid' : d.BillStatus === 'Unpaid' ? 'unpaid' : 'unbilled') + '">' + d.BillStatus + '</span></div>' +
-            '<div class="history-item-sub">' + new Date(d.DamageDate).toLocaleDateString() +
-            (d.Description ? ' · ' + d.Description : '') + '</div></div>';
-        }).join('')
-      : '<p class="text-muted">No damage history.</p>';
-  }
-
-  function resetLookup() {
-    document.getElementById('lookup-serial').value = '';
-    ['lookup-device-results','lookup-device-searching'].forEach(function(id) {
-      document.getElementById(id).classList.add('hidden');
-    });
-    document.getElementById('lookup-details').classList.add('hidden');
   }
 
   function showToast(msg, type) {
